@@ -9,7 +9,7 @@ import { LucideAngularModule, LayoutDashboard, Calendar, UserCircle, Handshake, 
   imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule],
   template: `
     <div class="h-16 flex items-center px-6 border-b border-gray-200">
-      <h2 class="text-xl font-bold text-primary m-0">BarberSys</h2>
+      <h2 class="text-xl font-bold text-primary m-0">Agenda +</h2>
     </div>
     <nav class="py-4">
       <ul class="space-y-1">

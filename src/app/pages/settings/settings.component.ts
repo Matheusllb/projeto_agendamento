@@ -109,13 +109,13 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Settings will be loaded from API in future implementation
+    // As configurações serão carregadas da API em implementação futura
   }
 
   saveSettings() {
     if (this.settingsForm.valid) {
       this.saving = true;
-      // Simulate save
+      // Simular salvamento
       setTimeout(() => {
         this.saving = false;
         alert('Configurações salvas com sucesso! (Funcionalidade em desenvolvimento)');

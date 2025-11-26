@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap, timeout } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface ApiResponse<T> {
@@ -19,66 +19,77 @@ export class ApiService {
     private http = inject(HttpClient);
     private baseUrl = environment.apiUrl;
 
-    // Generic GET request
+    // Requisição GET genérica
     get<T>(endpoint: string): Observable<T> {
         return this.http.get<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`)
             .pipe(
+                timeout(5000),
                 map(response => response.data as T),
                 catchError(this.handleError)
             );
     }
 
-    // Generic GET request that returns full response
+    // Requisição GET genérica que retorna resposta completa
     getWithResponse<T>(endpoint: string): Observable<ApiResponse<T>> {
-        return this.http.get<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`)
-            .pipe(catchError(this.handleError));
+        const url = `${this.baseUrl}/${endpoint}`;
+        console.log(`ApiService: GET request to ${url}`);
+        return this.http.get<ApiResponse<T>>(url)
+            .pipe(
+                timeout(5000),
+                tap(response => console.log(`ApiService: Response from ${endpoint}:`, response)),
+                catchError(this.handleError)
+            );
     }
 
-    // Generic POST request
+    // Requisição POST genérica
     post<T>(endpoint: string, data: any): Observable<T> {
         return this.http.post<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data)
             .pipe(
+                timeout(5000),
                 map(response => response.data as T),
                 catchError(this.handleError)
             );
     }
 
-    // Generic PUT request
+    // Requisição PUT genérica
     put<T>(endpoint: string, data: any): Observable<T> {
         return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data)
             .pipe(
+                timeout(5000),
                 map(response => response.data as T),
                 catchError(this.handleError)
             );
     }
 
-    // Generic PATCH request
+    // Requisição PATCH genérica
     patch<T>(endpoint: string, data: any): Observable<T> {
         return this.http.patch<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`, data)
             .pipe(
+                timeout(5000),
                 map(response => response.data as T),
                 catchError(this.handleError)
             );
     }
 
-    // Generic DELETE request
+    // Requisição DELETE genérica
     delete<T>(endpoint: string): Observable<T> {
         return this.http.delete<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`)
             .pipe(
+                timeout(5000),
                 map(response => response.data as T),
                 catchError(this.handleError)
             );
     }
 
-    // Error handling
+    // Tratamento de erros
     private handleError(error: HttpErrorResponse) {
         let errorMessage = 'Ocorreu um erro desconhecido';
 
         if (error.error instanceof ErrorEvent) {
-            // Client-side error
+            // Erro do lado do cliente
             errorMessage = `Erro: ${error.error.message}`;
         } else {
-            // Server-side error
+            // Erro do lado do servidor
             errorMessage = error.error?.message || `Erro ${error.status}: ${error.statusText}`;
         }
 

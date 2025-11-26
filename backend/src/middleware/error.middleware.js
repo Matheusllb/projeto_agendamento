@@ -1,5 +1,6 @@
 const errorHandler = (err, req, res, next) => {
     console.error('Error:', err);
+    console.error('Error stack:', err.stack);
 
     // MySQL errors
     if (err.code === 'ER_DUP_ENTRY') {

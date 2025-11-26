@@ -1,4 +1,4 @@
-# Guia de Teste - Integração Full-Stack
+# Guia de Teste - Conexão Backend
 
 ## Problema: "Carregando..." Infinito
 
@@ -14,9 +14,9 @@ npm start
 
 Você deve ver:
 ```
-✅ MySQL Database connected successfully
-🚀 Server running on port 3000
-📡 API available at http://localhost:3000/api
+> Conexão com o Banco de Dados estabelecida com sucesso!
+> Servidor rodando na porta 3000
+> API disponível em http://localhost:3000/api
 ```
 
 ### 2. Verificar Conexão com MySQL

@@ -5,7 +5,7 @@ export interface Service {
     nome: string;
     descricao: string;
     preco: number;
-    duracao: number; // minutes
+    duracao: number; // minutos
     diasFuturosAgendamento?: number;
     ativo: boolean;
 }

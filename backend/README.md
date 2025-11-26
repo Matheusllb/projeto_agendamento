@@ -1,4 +1,4 @@
-# Backend API - BarberSys
+# Backend API - Agenda +
 
 ## Configuração
 

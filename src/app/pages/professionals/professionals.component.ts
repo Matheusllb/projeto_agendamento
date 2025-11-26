@@ -18,17 +18,17 @@ import { Observable } from 'rxjs';
       </button>
     </div>
 
-    <!-- Loading State -->
+    <!-- Estado de Carregamento -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Error State -->
+    <!-- Estado de Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
 
-    <!-- List -->
+    <!-- Lista -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!showForm && !(loading$ | async)">
       <div class="card flex flex-col gap-4" *ngFor="let prof of professionals$ | async">
         <div class="flex items-center gap-4">
@@ -58,7 +58,7 @@ import { Observable } from 'rxjs';
       </div>
     </div>
 
-    <!-- Form -->
+    <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Profissional</h3>
       <form [formGroup]="profForm" (ngSubmit)="saveProfessional()" class="space-y-4">

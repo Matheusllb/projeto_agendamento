@@ -7,10 +7,10 @@ import { LucideAngularModule, Plus, Trash2, Edit, Search, History } from 'lucide
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-clients',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
-    template: `
+  selector: 'app-clients',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
+  template: `
     <div class="page-header">
       <h2>Clientes</h2>
       <button class="btn btn-primary" (click)="openForm()">
@@ -18,23 +18,23 @@ import { Observable } from 'rxjs';
       </button>
     </div>
 
-    <!-- Loading State -->
+    <!-- Estado de Carregamento -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Error State -->
+    <!-- Estado de Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
 
-    <!-- Search (Placeholder) -->
+    <!-- Busca (Placeholder) -->
     <div class="mb-6 relative" *ngIf="!showForm">
       <lucide-icon [img]="Search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
       <input type="text" placeholder="Buscar por nome, telefone ou email..." class="form-control pl-10">
     </div>
 
-    <!-- List (Table) -->
+    <!-- Lista (Tabela) -->
     <div class="card overflow-hidden p-0" *ngIf="!showForm && !(loading$ | async)">
       <div class="overflow-x-auto">
         <table class="data-table w-full">
@@ -73,7 +73,7 @@ import { Observable } from 'rxjs';
       </div>
     </div>
 
-    <!-- Form -->
+    <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Cliente</h3>
       <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="space-y-4">
@@ -109,96 +109,96 @@ import { Observable } from 'rxjs';
   `
 })
 export class ClientsComponent implements OnInit {
-    private fb = inject(FormBuilder);
-    private dataService = inject(DataService);
+  private fb = inject(FormBuilder);
+  private dataService = inject(DataService);
 
-    readonly Plus = Plus;
-    readonly Trash2 = Trash2;
-    readonly Edit = Edit;
-    readonly Search = Search;
-    readonly History = History;
+  readonly Plus = Plus;
+  readonly Trash2 = Trash2;
+  readonly Edit = Edit;
+  readonly Search = Search;
+  readonly History = History;
 
-    clients$!: Observable<Client[]>;
-    loading$ = this.dataService.loading$;
+  clients$!: Observable<Client[]>;
+  loading$ = this.dataService.loading$;
 
-    showForm = false;
-    isEditing = false;
-    editingId: number | null = null;
-    errorMessage = '';
-    saving = false;
+  showForm = false;
+  isEditing = false;
+  editingId: number | null = null;
+  errorMessage = '';
+  saving = false;
 
-    clientForm: FormGroup;
+  clientForm: FormGroup;
 
-    constructor() {
-        this.clientForm = this.fb.group({
-            nome: ['', Validators.required],
-            telefone: ['', Validators.required],
-            email: ['', [Validators.email]],
-            observacoes: ['']
-        });
-    }
+  constructor() {
+    this.clientForm = this.fb.group({
+      nome: ['', Validators.required],
+      telefone: ['', Validators.required],
+      email: ['', [Validators.email]],
+      observacoes: ['']
+    });
+  }
 
-    ngOnInit() {
-        this.loadClients();
-    }
+  ngOnInit() {
+    this.loadClients();
+  }
 
-    loadClients() {
-        this.clients$ = this.dataService.getClients();
-    }
+  loadClients() {
+    this.clients$ = this.dataService.getClients();
+  }
 
-    openForm() {
-        this.showForm = true;
-        this.isEditing = false;
-        this.clientForm.reset();
-    }
+  openForm() {
+    this.showForm = true;
+    this.isEditing = false;
+    this.clientForm.reset();
+  }
 
-    editClient(client: Client) {
-        this.showForm = true;
-        this.isEditing = true;
-        this.editingId = client.idCliente!;
-        this.clientForm.patchValue(client);
-    }
+  editClient(client: Client) {
+    this.showForm = true;
+    this.isEditing = true;
+    this.editingId = client.idCliente!;
+    this.clientForm.patchValue(client);
+  }
 
-    cancelForm() {
-        this.showForm = false;
-        this.editingId = null;
-        this.errorMessage = '';
-    }
+  cancelForm() {
+    this.showForm = false;
+    this.editingId = null;
+    this.errorMessage = '';
+  }
 
-    saveClient() {
-        if (this.clientForm.valid) {
-            this.saving = true;
-            this.errorMessage = '';
-            const client: Client = this.clientForm.value;
+  saveClient() {
+    if (this.clientForm.valid) {
+      this.saving = true;
+      this.errorMessage = '';
+      const client: Client = this.clientForm.value;
 
-            const operation = this.isEditing && this.editingId
-                ? this.dataService.updateClient(this.editingId, client)
-                : this.dataService.addClient(client);
+      const operation = this.isEditing && this.editingId
+        ? this.dataService.updateClient(this.editingId, client)
+        : this.dataService.addClient(client);
 
-            operation.subscribe({
-                next: () => {
-                    this.saving = false;
-                    this.cancelForm();
-                    this.loadClients();
-                },
-                error: (error) => {
-                    this.saving = false;
-                    this.errorMessage = error.message || 'Erro ao salvar cliente';
-                }
-            });
+      operation.subscribe({
+        next: () => {
+          this.saving = false;
+          this.cancelForm();
+          this.loadClients();
+        },
+        error: (error) => {
+          this.saving = false;
+          this.errorMessage = error.message || 'Erro ao salvar cliente';
         }
+      });
     }
+  }
 
-    deleteClient(id: number) {
-        if (confirm('Tem certeza que deseja excluir este cliente?')) {
-            this.dataService.deleteClient(id).subscribe({
-                next: () => {
-                    this.loadClients();
-                },
-                error: (error) => {
-                    this.errorMessage = error.message || 'Erro ao excluir cliente';
-                }
-            });
+  deleteClient(id: number) {
+    if (confirm('Tem certeza que deseja excluir este cliente?')) {
+      this.dataService.deleteClient(id).subscribe({
+        next: () => {
+          this.loadClients();
+        },
+        error: (error) => {
+          this.errorMessage = error.message || 'Erro ao excluir cliente';
         }
+      });
     }
+  }
 }

@@ -3,7 +3,7 @@ export interface Professional {
     nome: string;
     telefone: string;
     ativo: boolean;
-    diasDaSemana: DaySchedule[];
+    diasDaSemana: string[];
     horaEntrada: string;
     almoco: string;
     horaSaida: string;

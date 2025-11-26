@@ -15,14 +15,20 @@ import { ApiService, ApiResponse } from './api.service';
 export class DataService {
     private apiService = inject(ApiService);
 
-    // Loading states
+    // Estados de carregamento
     loading$ = new BehaviorSubject<boolean>(false);
 
-    // Professionals
+    // Profissionais
     getProfessionals(): Observable<Professional[]> {
         this.loading$.next(true);
+        console.log('DataService: Buscando profissionais...');
         return this.apiService.getWithResponse<Professional[]>('professionals').pipe(
-            map(response => response.data || []),
+            tap(response => console.log('DataService: Resposta profissionais:', response)),
+            map(response => {
+                const data = response.data || [];
+                console.log('DataService: Dados mapeados profissionais:', data);
+                return data;
+            }),
             catchError(error => {
                 console.error('Error loading professionals:', error);
                 return of([]);
@@ -47,11 +53,17 @@ export class DataService {
         return this.apiService.delete(`professionals/${id}`);
     }
 
-    // Services
+    // Serviços
     getServices(): Observable<Service[]> {
         this.loading$.next(true);
+        console.log('DataService: Buscando serviços...');
         return this.apiService.getWithResponse<Service[]>('services').pipe(
-            map(response => response.data || []),
+            tap(response => console.log('DataService: Resposta serviços:', response)),
+            map(response => {
+                const data = response.data || [];
+                console.log('DataService: Dados mapeados serviços:', data);
+                return data;
+            }),
             catchError(error => {
                 console.error('Error loading services:', error);
                 return of([]);
@@ -76,11 +88,17 @@ export class DataService {
         return this.apiService.delete(`services/${id}`);
     }
 
-    // Clients
+    // Clientes
     getClients(): Observable<Client[]> {
         this.loading$.next(true);
+        console.log('DataService: Buscando clientes...');
         return this.apiService.getWithResponse<Client[]>('clients').pipe(
-            map(response => response.data || []),
+            tap(response => console.log('DataService: Resposta clientes:', response)),
+            map(response => {
+                const data = response.data || [];
+                console.log('DataService: Dados mapeados clientes:', data);
+                return data;
+            }),
             catchError(error => {
                 console.error('Error loading clients:', error);
                 return of([]);
@@ -105,7 +123,7 @@ export class DataService {
         return this.apiService.delete(`clients/${id}`);
     }
 
-    // Appointments
+    // Agendamentos
     getAppointments(filters?: any): Observable<Appointment[]> {
         this.loading$.next(true);
         let endpoint = 'appointments';
@@ -157,7 +175,7 @@ export class DataService {
         return this.apiService.delete(`appointments/${id}`);
     }
 
-    // Products (for future use - not implemented in backend yet)
+    // Produtos (para uso futuro - ainda não implementado no backend)
     getProducts(): Observable<Product[]> {
         return of([]);
     }

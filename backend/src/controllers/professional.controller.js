@@ -1,7 +1,7 @@
 const ProfessionalModel = require('../models/professional.model');
 
 class ProfessionalController {
-    // Get all professionals
+    // Buscar todos os profissionais
     static async getAll(req, res, next) {
         try {
             const professionals = await ProfessionalModel.getAll();
@@ -15,7 +15,7 @@ class ProfessionalController {
         }
     }
 
-    // Get professional by ID
+    // Buscar profissional por ID
     static async getById(req, res, next) {
         try {
             const { id } = req.params;
@@ -37,7 +37,7 @@ class ProfessionalController {
         }
     }
 
-    // Create new professional
+    // Criar novo profissional
     static async create(req, res, next) {
         try {
             const professional = await ProfessionalModel.create(req.body);
@@ -51,7 +51,7 @@ class ProfessionalController {
         }
     }
 
-    // Update professional
+    // Atualizar profissional
     static async update(req, res, next) {
         try {
             const { id } = req.params;
@@ -74,7 +74,7 @@ class ProfessionalController {
         }
     }
 
-    // Delete professional (soft delete)
+    // Excluir profissional (exclusão lógica)
     static async delete(req, res, next) {
         try {
             const { id } = req.params;

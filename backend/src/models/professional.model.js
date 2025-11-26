@@ -1,15 +1,15 @@
 const db = require('../config/database');
 
 class ProfessionalModel {
-    // Get all professionals
+    // Buscar todos os profissionais
     static async getAll() {
         const [rows] = await db.query(
             'SELECT * FROM PROFISSIONAL WHERE ATIVO = 1 ORDER BY NOME'
         );
-        return rows.map(this.formatProfessional);
+        return rows.map(row => this.formatProfessional(row));
     }
 
-    // Get professional by ID
+    // Buscar profissional por ID
     static async getById(id) {
         const [rows] = await db.query(
             'SELECT * FROM PROFISSIONAL WHERE IDPROF = ?',
@@ -18,7 +18,7 @@ class ProfessionalModel {
         return rows.length > 0 ? this.formatProfessional(rows[0]) : null;
     }
 
-    // Create new professional
+    // Criar novo profissional
     static async create(data) {
         const { nome, telefone, horaEntrada, almoco, horaSaida, diasDaSemana, especialidades, foto, avaliacao } = data;
 
@@ -42,7 +42,7 @@ class ProfessionalModel {
         return this.getById(result.insertId);
     }
 
-    // Update professional
+    // Atualizar profissional
     static async update(id, data) {
         const { nome, telefone, ativo, horaEntrada, almoco, horaSaida, diasDaSemana, especialidades, foto, avaliacao } = data;
 
@@ -70,7 +70,7 @@ class ProfessionalModel {
         return this.getById(id);
     }
 
-    // Soft delete (set ATIVO = 0)
+    // Exclusão lógica (define ATIVO = 0)
     static async delete(id) {
         await db.query(
             'UPDATE PROFISSIONAL SET ATIVO = 0 WHERE IDPROF = ?',
@@ -79,20 +79,45 @@ class ProfessionalModel {
         return { success: true, message: 'Profissional desativado com sucesso' };
     }
 
-    // Format professional data
+    // Função helper para fazer parse seguro de JSON
+    static safeJSONParse(value, defaultValue = []) {
+        if (!value) return defaultValue;
+
+        // Se já for um array ou objeto, retorna diretamente (MySQL2 faz parse automático)
+        if (typeof value === 'object') {
+            return value;
+        }
+
+        // Se for string, tenta fazer parse
+        if (typeof value === 'string') {
+            try {
+                return JSON.parse(value);
+            } catch (error) {
+                // Se falhar, tenta tratar como string separada por vírgula
+                const cleaned = value.replace(/[\[\]"]/g, '').trim();
+                if (cleaned) {
+                    return cleaned.split(',').map(item => item.trim()).filter(item => item);
+                }
+            }
+        }
+
+        return defaultValue;
+    }
+
+    // Formatar dados do profissional
     static formatProfessional(row) {
         return {
             idProf: row.IDPROF,
             nome: row.NOME,
             telefone: row.TELEFONE,
             ativo: Boolean(row.ATIVO),
-            diasDaSemana: row.DIASDASEMANA ? JSON.parse(row.DIASDASEMANA) : [],
+            diasDaSemana: this.safeJSONParse(row.DIASDASEMANA, []),
             horaEntrada: row.HORAENTRADA,
             almoco: row.ALMOCO,
             horaSaida: row.HORASAIDA,
             foto: row.FOTO,
             avaliacao: row.AVALIACAO,
-            especialidades: row.ESPECIALIDADES ? JSON.parse(row.ESPECIALIDADES) : []
+            especialidades: this.safeJSONParse(row.ESPECIALIDADES, [])
         };
     }
 }
