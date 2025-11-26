@@ -1,1 +1,60 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Component Classes */
+.btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors duration-200 border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark focus:ring-primary;
+}
+
+.btn-secondary {
+    @apply bg-transparent border-border text-text-secondary hover:bg-gray-50 hover:text-primary focus:ring-gray-200;
+}
+
+.btn-icon {
+    @apply p-1 rounded hover:bg-gray-100 text-text-secondary hover:text-primary transition-colors;
+}
+
+.btn-icon.danger:hover {
+    @apply text-danger hover:bg-red-50;
+}
+
+.card {
+    @apply bg-white rounded-lg shadow-sm p-6 border border-gray-100;
+}
+
+.form-control {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary transition-shadow;
+}
+
+.page-header {
+    @apply flex justify-between items-center mb-6;
+}
+
+.page-header h2 {
+    @apply text-2xl font-bold text-gray-800;
+}
+
+/* Data Table Styles */
+.data-table {
+    @apply w-full text-left border-collapse;
+}
+
+.data-table th {
+    @apply px-4 py-3 font-semibold text-text-secondary border-b border-gray-200 bg-gray-50;
+}
+
+.data-table td {
+    @apply px-4 py-3 border-b border-gray-100;
+}
+
+.data-table tr:last-child td {
+    @apply border-b-0;
+}
+
