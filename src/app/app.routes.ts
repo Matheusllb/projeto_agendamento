@@ -1,3 +1,7 @@
+/**
+ * Este arquivo define as rotas da aplicação.
+ * Ele mapeia URLs (caminhos) para componentes específicos, permitindo a navegação entre páginas.
+ */
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SettingsComponent } from './pages/settings/settings.component';

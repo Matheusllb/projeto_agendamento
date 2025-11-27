@@ -1,10 +1,16 @@
+/**
+ * Este componente gerencia a tela de Profissionais.
+ * Ele permite listar, adicionar, editar e remover profissionais,
+ * delegando a lógica de dados para o ProfessionalService.
+ */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataService } from '../../services/data.service';
-import { Professional, DaySchedule } from '../../models/professional.model';
+import { ProfessionalService } from '../../services/professional.service';
+import { Professional } from '../../models/professional.model';
 import { LucideAngularModule, Plus, Trash2, Edit, Star, User } from 'lucide-angular';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-professionals',
@@ -14,16 +20,16 @@ import { Observable } from 'rxjs';
     <div class="page-header">
       <h2>Profissionais</h2>
       <button class="btn btn-primary" (click)="openForm()">
-        <lucide-icon [img]="Plus" class="w-4 h-4 mr-2"></lucide-icon> Novo Profissional
+        <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Profissional
       </button>
     </div>
 
-    <!-- Estado de Carregamento -->
+    <!-- Carregamento -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Estado de Erro -->
+    <!-- Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
@@ -34,7 +40,7 @@ import { Observable } from 'rxjs';
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-full bg-primary-light text-primary flex items-center justify-center overflow-hidden">
             <img *ngIf="prof.foto" [src]="prof.foto" alt="Avatar" class="w-full h-full object-cover">
-            <lucide-icon *ngIf="!prof.foto" [img]="User" size="32"></lucide-icon>
+            <lucide-icon *ngIf="!prof.foto" [img]="Usuario" size="32"></lucide-icon>
           </div>
           <div>
             <h3 class="font-bold text-lg text-gray-800">{{ prof.nome }}</h3>
@@ -42,17 +48,17 @@ import { Observable } from 'rxjs';
               {{ prof.especialidades.join(', ') }}
             </span>
             <div class="flex items-center gap-1 mt-1 font-semibold text-gray-700" *ngIf="prof.avaliacao">
-              <lucide-icon [img]="Star" size="14" fill="gold" stroke="none"></lucide-icon>
+              <lucide-icon [img]="Avaliacao" size="14" fill="gold" stroke="none"></lucide-icon>
               <span>{{ prof.avaliacao }}</span>
             </div>
           </div>
         </div>
         <div class="flex justify-end gap-2 mt-auto pt-4 border-t border-gray-100">
           <button class="btn-icon" (click)="editProfessional(prof)">
-            <lucide-icon [img]="Edit" size="18"></lucide-icon>
+            <lucide-icon [img]="Editar" size="18"></lucide-icon>
           </button>
           <button class="btn-icon danger" (click)="deleteProfessional(prof.idProf!)">
-            <lucide-icon [img]="Trash2" size="18"></lucide-icon>
+            <lucide-icon [img]="Remover" size="18"></lucide-icon>
           </button>
         </div>
       </div>
@@ -101,16 +107,16 @@ import { Observable } from 'rxjs';
 })
 export class ProfessionalsComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private dataService = inject(DataService);
+  private professionalService = inject(ProfessionalService);
 
-  readonly Plus = Plus;
-  readonly Trash2 = Trash2;
-  readonly Edit = Edit;
-  readonly Star = Star;
-  readonly User = User;
+  readonly Adicionar = Plus;
+  readonly Remover = Trash2;
+  readonly Editar = Edit;
+  readonly Avaliacao = Star;
+  readonly Usuario = User;
 
-  professionals$!: Observable<Professional[]>;
-  loading$ = this.dataService.loading$;
+  professionals$!: Observable<readonly Professional[]>;
+  loading$ = new BehaviorSubject<boolean>(false);
 
   showForm = false;
   isEditing = false;
@@ -139,7 +145,10 @@ export class ProfessionalsComponent implements OnInit {
   }
 
   loadProfessionals() {
-    this.professionals$ = this.dataService.getProfessionals();
+    this.loading$.next(true);
+    this.professionals$ = this.professionalService.getAll().pipe(
+      finalize(() => this.loading$.next(false))
+    );
   }
 
   openForm() {
@@ -192,8 +201,8 @@ export class ProfessionalsComponent implements OnInit {
       };
 
       const operation = this.isEditing && this.editingId
-        ? this.dataService.updateProfessional(this.editingId, professional)
-        : this.dataService.addProfessional(professional);
+        ? this.professionalService.update(this.editingId, professional)
+        : this.professionalService.create(professional);
 
       operation.subscribe({
         next: () => {
@@ -211,7 +220,7 @@ export class ProfessionalsComponent implements OnInit {
 
   deleteProfessional(id: number) {
     if (confirm('Tem certeza que deseja desativar este profissional?')) {
-      this.dataService.deleteProfessional(id).subscribe({
+      this.professionalService.delete(id).subscribe({
         next: () => {
           this.loadProfessionals();
         },

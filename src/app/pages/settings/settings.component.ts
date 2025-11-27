@@ -75,7 +75,7 @@ import { LucideAngularModule, Settings as SettingsIcon, Save } from 'lucide-angu
             </div>
           </div>
 
-          <!-- Botões -->
+          <!-- Butões -->
           <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
             <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
             <button type="submit" class="btn btn-primary" [disabled]="settingsForm.invalid || saving">
@@ -109,13 +109,13 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    // As configurações serão carregadas da API em implementação futura
+    // As configurações serão carregadas da API ao iniciar a aplicação em implementação futura
   }
 
   saveSettings() {
     if (this.settingsForm.valid) {
       this.saving = true;
-      // Simular salvamento
+      // Simulação de salvamento
       setTimeout(() => {
         this.saving = false;
         alert('Configurações salvas com sucesso! (Funcionalidade em desenvolvimento)');

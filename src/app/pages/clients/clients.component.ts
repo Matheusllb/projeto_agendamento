@@ -1,10 +1,16 @@
+/**
+ * Este componente gerencia a tela de Clientes.
+ * Ele permite listar, adicionar, editar e remover clientes,
+ * transferindo a lógica de dados para o ClientService, que faz as requisições HTTP para a API.
+ */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataService } from '../../services/data.service';
+import { ClientService } from '../../services/client.service';
 import { Client } from '../../models/client.model';
 import { LucideAngularModule, Plus, Trash2, Edit, Search, History } from 'lucide-angular';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-clients',
@@ -14,23 +20,23 @@ import { Observable } from 'rxjs';
     <div class="page-header">
       <h2>Clientes</h2>
       <button class="btn btn-primary" (click)="openForm()">
-        <lucide-icon [img]="Plus" class="w-4 h-4 mr-2"></lucide-icon> Novo Cliente
+        <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Cliente
       </button>
     </div>
 
-    <!-- Estado de Carregamento -->
+    <!-- Carregamento -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Estado de Erro -->
+    <!-- Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
 
-    <!-- Busca (Placeholder) -->
+    <!-- Busca -->
     <div class="mb-6 relative" *ngIf="!showForm">
-      <lucide-icon [img]="Search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+      <lucide-icon [img]="Buscar" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
       <input type="text" placeholder="Buscar por nome, telefone ou email..." class="form-control pl-10">
     </div>
 
@@ -54,13 +60,13 @@ import { Observable } from 'rxjs';
               <td class="p-4 text-right">
                 <div class="flex justify-end gap-2">
                   <button class="btn-icon" title="Histórico">
-                    <lucide-icon [img]="History" size="18"></lucide-icon>
+                    <lucide-icon [img]="Historico" size="18"></lucide-icon>
                   </button>
                   <button class="btn-icon" (click)="editClient(client)">
-                    <lucide-icon [img]="Edit" size="18"></lucide-icon>
+                    <lucide-icon [img]="Editar" size="18"></lucide-icon>
                   </button>
                   <button class="btn-icon danger" (click)="deleteClient(client.idCliente!)">
-                    <lucide-icon [img]="Trash2" size="18"></lucide-icon>
+                    <lucide-icon [img]="Remover" size="18"></lucide-icon>
                   </button>
                 </div>
               </td>
@@ -110,16 +116,16 @@ import { Observable } from 'rxjs';
 })
 export class ClientsComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private dataService = inject(DataService);
+  private clientService = inject(ClientService);
 
-  readonly Plus = Plus;
-  readonly Trash2 = Trash2;
-  readonly Edit = Edit;
-  readonly Search = Search;
-  readonly History = History;
+  readonly Adicionar = Plus;
+  readonly Remover = Trash2;
+  readonly Editar = Edit;
+  readonly Buscar = Search;
+  readonly Historico = History;
 
-  clients$!: Observable<Client[]>;
-  loading$ = this.dataService.loading$;
+  clients$!: Observable<readonly Client[]>;
+  loading$ = new BehaviorSubject<boolean>(false);
 
   showForm = false;
   isEditing = false;
@@ -143,7 +149,10 @@ export class ClientsComponent implements OnInit {
   }
 
   loadClients() {
-    this.clients$ = this.dataService.getClients();
+    this.loading$.next(true);
+    this.clients$ = this.clientService.getAll().pipe(
+      finalize(() => this.loading$.next(false))
+    );
   }
 
   openForm() {
@@ -172,8 +181,8 @@ export class ClientsComponent implements OnInit {
       const client: Client = this.clientForm.value;
 
       const operation = this.isEditing && this.editingId
-        ? this.dataService.updateClient(this.editingId, client)
-        : this.dataService.addClient(client);
+        ? this.clientService.update(this.editingId, client)
+        : this.clientService.create(client);
 
       operation.subscribe({
         next: () => {
@@ -191,7 +200,7 @@ export class ClientsComponent implements OnInit {
 
   deleteClient(id: number) {
     if (confirm('Tem certeza que deseja excluir este cliente?')) {
-      this.dataService.deleteClient(id).subscribe({
+      this.clientService.delete(id).subscribe({
         next: () => {
           this.loadClients();
         },

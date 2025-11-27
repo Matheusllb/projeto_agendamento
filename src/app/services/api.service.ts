@@ -1,3 +1,8 @@
+/**
+ * Este serviço é um wrapper em torno do HttpClient do Angular.
+ * Ele centraliza todas as chamadas HTTP (GET, POST, PUT, DELETE) para a API,
+ * padronizando o tratamento de erros e o formato das respostas.
+ */
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -32,11 +37,11 @@ export class ApiService {
     // Requisição GET genérica que retorna resposta completa
     getWithResponse<T>(endpoint: string): Observable<ApiResponse<T>> {
         const url = `${this.baseUrl}/${endpoint}`;
-        console.log(`ApiService: GET request to ${url}`);
+        console.log(`ApiService: Solicitação de GET para ${url}`);
         return this.http.get<ApiResponse<T>>(url)
             .pipe(
                 timeout(5000),
-                tap(response => console.log(`ApiService: Response from ${endpoint}:`, response)),
+                tap(response => console.log(`ApiService: Resposta para ${endpoint}:`, response)),
                 catchError(this.handleError)
             );
     }

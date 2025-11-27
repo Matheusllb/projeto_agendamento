@@ -16,43 +16,43 @@ import { LucideAngularModule, LayoutDashboard, Calendar, UserCircle, Handshake, 
         <li>
           <a routerLink="/dashboard" routerLinkActive="bg-primary-light text-primary border-primary" 
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="LayoutDashboard" class="mr-3 w-5 h-5"></lucide-icon> Dashboard
+            <lucide-icon [img]="Dashboard" class="mr-3 w-5 h-5"></lucide-icon> Dashboard
           </a>
         </li>
         <li>
           <a routerLink="/appointments" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="Calendar" class="mr-3 w-5 h-5"></lucide-icon> Agendamentos
+            <lucide-icon [img]="Agendamentos" class="mr-3 w-5 h-5"></lucide-icon> Agendamentos
           </a>
         </li>
         <li>
           <a routerLink="/professionals" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="UserCircle" class="mr-3 w-5 h-5"></lucide-icon> Profissionais
+            <lucide-icon [img]="Profissionais" class="mr-3 w-5 h-5"></lucide-icon> Profissionais
           </a>
         </li>
         <li>
           <a routerLink="/services" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="Handshake" class="mr-3 w-5 h-5"></lucide-icon> Serviços
+            <lucide-icon [img]="Servicos" class="mr-3 w-5 h-5"></lucide-icon> Serviços
           </a>
         </li>
         <li>
           <a routerLink="/clients" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="Users" class="mr-3 w-5 h-5"></lucide-icon> Clientes
+            <lucide-icon [img]="Clientes" class="mr-3 w-5 h-5"></lucide-icon> Clientes
           </a>
         </li>
         <li>
           <a routerLink="/products" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="Package" class="mr-3 w-5 h-5"></lucide-icon> Estoque
+            <lucide-icon [img]="Estoque" class="mr-3 w-5 h-5"></lucide-icon> Estoque
           </a>
         </li>
         <li>
           <a routerLink="/settings" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
-            <lucide-icon [img]="Settings" class="mr-3 w-5 h-5"></lucide-icon> Configurações
+            <lucide-icon [img]="Configuracoes" class="mr-3 w-5 h-5"></lucide-icon> Configurações
           </a>
         </li>
       </ul>
@@ -60,11 +60,11 @@ import { LucideAngularModule, LayoutDashboard, Calendar, UserCircle, Handshake, 
   `
 })
 export class SidebarComponent {
-  readonly LayoutDashboard = LayoutDashboard;
-  readonly Calendar = Calendar;
-  readonly UserCircle = UserCircle;
-  readonly Handshake = Handshake;
-  readonly Users = Users;
-  readonly Package = Package;
-  readonly Settings = Settings;
+  readonly Dashboard = LayoutDashboard;
+  readonly Agendamentos = Calendar;
+  readonly Profissionais = UserCircle;
+  readonly Servicos = Handshake;
+  readonly Clientes = Users;
+  readonly Estoque = Package;
+  readonly Configuracoes = Settings;
 }

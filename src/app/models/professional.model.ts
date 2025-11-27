@@ -1,18 +1,23 @@
+/**
+ * Interface que define a estrutura de dados de um Profissional.
+ * Utilizamos 'readonly' para garantir a imutabilidade dos dados no frontend,
+ * prevenindo alterações acidentais diretas nos objetos.
+ */
 export interface Professional {
-    idProf?: number;
-    nome: string;
-    telefone: string;
-    ativo: boolean;
-    diasDaSemana: string[];
-    horaEntrada: string;
-    almoco: string;
-    horaSaida: string;
-    foto?: string;
-    avaliacao?: number;
-    especialidades?: string[];
+    readonly idProf?: number;
+    readonly nome: string;
+    readonly telefone: string;
+    readonly ativo: boolean;
+    readonly diasDaSemana: readonly string[];
+    readonly horaEntrada: string;
+    readonly almoco: string;
+    readonly horaSaida: string;
+    readonly foto?: string;
+    readonly avaliacao?: number;
+    readonly especialidades?: readonly string[];
 }
 
 export interface DaySchedule {
-    dia: 'SEG' | 'TER' | 'QUA' | 'QUI' | 'SEX' | 'SAB' | 'DOM';
-    ativo: boolean;
+    readonly dia: 'SEG' | 'TER' | 'QUA' | 'QUI' | 'SEX' | 'SAB' | 'DOM';
+    readonly ativo: boolean;
 }

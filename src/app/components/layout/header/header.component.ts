@@ -1,3 +1,7 @@
+/**
+ * Este componente representa o cabeçalho superior da aplicação.
+ * Ele contém informações de status (Aberto/Fechado), perfil do usuário e botão de logout.
+ */
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Menu, LogOut, UserCircle } from 'lucide-angular';
@@ -13,17 +17,17 @@ import { LucideAngularModule, Menu, LogOut, UserCircle } from 'lucide-angular';
           <lucide-icon [img]="Menu"></lucide-icon>
         </button>
         <div class="flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-          <span class="w-2 h-2 bg-green-800 rounded-full mr-2"></span> ABERTO - Fecha às 19:00
+          <span class="w-2 h-2 bg-green-800 rounded-full mr-2"></span> ABERTO
         </div>
       </div>
       
       <div class="flex items-center gap-2">
         <span class="font-medium text-gray-700">Admin</span>
         <div class="w-8 h-8 bg-primary-light text-primary rounded-full flex items-center justify-center">
-          <lucide-icon [img]="UserCircle" size="20"></lucide-icon>
+          <lucide-icon [img]="Usuario" size="20"></lucide-icon>
         </div>
         <button class="p-1 rounded hover:bg-gray-100 text-text-secondary hover:text-primary transition-colors" title="Sair">
-          <lucide-icon [img]="LogOut" size="20"></lucide-icon>
+          <lucide-icon [img]="Sair" size="20"></lucide-icon>
         </button>
       </div>
     </header>
@@ -31,6 +35,6 @@ import { LucideAngularModule, Menu, LogOut, UserCircle } from 'lucide-angular';
 })
 export class HeaderComponent {
   readonly Menu = Menu;
-  readonly LogOut = LogOut;
-  readonly UserCircle = UserCircle;
+  readonly Sair = LogOut;
+  readonly Usuario = UserCircle;
 }

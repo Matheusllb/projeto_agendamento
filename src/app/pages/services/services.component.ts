@@ -1,10 +1,16 @@
+/**
+ * Este componente gerencia a tela de Serviços.
+ * Ele permite listar, adicionar, editar e remover serviços oferecidos,
+ * delegando a lógica de dados para o ServiceService.
+ */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataService } from '../../services/data.service';
+import { ServiceService } from '../../services/service.service';
 import { Service } from '../../models/service.model';
 import { LucideAngularModule, Plus, Trash2, Edit, Clock } from 'lucide-angular';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-services',
@@ -14,16 +20,16 @@ import { Observable } from 'rxjs';
     <div class="page-header">
       <h2>Serviços</h2>
       <button class="btn btn-primary" (click)="openForm()">
-        <lucide-icon [img]="Plus" class="w-4 h-4 mr-2"></lucide-icon> Novo Serviço
+        <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Serviço
       </button>
     </div>
 
-    <!-- Estado de Carregamento -->
+    <!-- Carregamento -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Estado de Erro -->
+    <!-- Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
@@ -36,7 +42,7 @@ import { Observable } from 'rxjs';
             <h3 class="font-bold text-lg text-gray-800">{{ service.nome }}</h3>
             <p class="text-sm text-gray-600 mt-1">{{ service.descricao }}</p>
             <div class="flex items-center gap-2 text-text-secondary mt-2">
-              <lucide-icon [img]="Clock" size="16"></lucide-icon>
+              <lucide-icon [img]="Duracao" size="16"></lucide-icon>
               <span>{{ service.duracao }} min</span>
             </div>
           </div>
@@ -47,10 +53,10 @@ import { Observable } from 'rxjs';
         
         <div class="flex justify-end gap-2 mt-auto pt-4 border-t border-gray-100">
           <button class="btn-icon" (click)="editService(service)">
-            <lucide-icon [img]="Edit" size="18"></lucide-icon>
+            <lucide-icon [img]="Editar" size="18"></lucide-icon>
           </button>
           <button class="btn-icon danger" (click)="deleteService(service.idServicos!)">
-            <lucide-icon [img]="Trash2" size="18"></lucide-icon>
+            <lucide-icon [img]="Remover" size="18"></lucide-icon>
           </button>
         </div>
       </div>
@@ -93,15 +99,15 @@ import { Observable } from 'rxjs';
 })
 export class ServicesComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private dataService = inject(DataService);
+  private serviceService = inject(ServiceService);
 
-  readonly Plus = Plus;
-  readonly Trash2 = Trash2;
-  readonly Edit = Edit;
-  readonly Clock = Clock;
+  readonly Adicionar = Plus;
+  readonly Remover = Trash2;
+  readonly Editar = Edit;
+  readonly Duracao = Clock;
 
-  services$!: Observable<Service[]>;
-  loading$ = this.dataService.loading$;
+  services$!: Observable<readonly Service[]>;
+  loading$ = new BehaviorSubject<boolean>(false);
 
   showForm = false;
   isEditing = false;
@@ -128,7 +134,10 @@ export class ServicesComponent implements OnInit {
   }
 
   loadServices() {
-    this.services$ = this.dataService.getServices();
+    this.loading$.next(true);
+    this.services$ = this.serviceService.getAll().pipe(
+      finalize(() => this.loading$.next(false))
+    );
   }
 
   openForm() {
@@ -163,8 +172,8 @@ export class ServicesComponent implements OnInit {
       const service: Service = this.serviceForm.value;
 
       const operation = this.isEditing && this.editingId
-        ? this.dataService.updateService(this.editingId, service)
-        : this.dataService.addService(service);
+        ? this.serviceService.update(this.editingId, service)
+        : this.serviceService.create(service);
 
       operation.subscribe({
         next: () => {
@@ -182,7 +191,7 @@ export class ServicesComponent implements OnInit {
 
   deleteService(id: number) {
     if (confirm('Tem certeza que deseja desativar este serviço?')) {
-      this.dataService.deleteService(id).subscribe({
+      this.serviceService.delete(id).subscribe({
         next: () => {
           this.loadServices();
         },

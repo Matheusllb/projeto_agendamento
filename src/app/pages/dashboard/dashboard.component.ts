@@ -1,3 +1,7 @@
+/**
+ * Este componente exibe a página inicial (Dashboard) do sistema.
+ * Ele fornece uma visão geral e acesso rápido às funcionalidades principais.
+ */
 import { Component } from '@angular/core';
 
 @Component({

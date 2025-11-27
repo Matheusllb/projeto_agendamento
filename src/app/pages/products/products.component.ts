@@ -1,10 +1,16 @@
+/**
+ * Este componente gerencia a tela de Produtos.
+ * Ele permite controlar o estoque, preços e cadastro de produtos,
+ * delegando a lógica de dados para o ProductService.
+ */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DataService } from '../../services/data.service';
+import { ProductService } from '../../services/product.service';
 import { Product } from '../../models/product.model';
 import { LucideAngularModule, Plus, Trash2, Edit, AlertTriangle, Package } from 'lucide-angular';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-products',
@@ -14,21 +20,21 @@ import { Observable } from 'rxjs';
     <div class="page-header">
       <h2>Produtos</h2>
       <button class="btn btn-primary" (click)="openForm()">
-        <lucide-icon [img]="Plus" class="w-4 h-4 mr-2"></lucide-icon> Novo Produto
+        <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Produto
       </button>
     </div>
 
-    <!-- Loading State -->
+    <!-- Carregando -->
     <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
-    <!-- Error State -->
+    <!-- Erro -->
     <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
       {{ errorMessage }}
     </div>
 
-    <!-- List (Table) -->
+    <!-- Lista (Tabela) -->
     <div class="card overflow-hidden p-0" *ngIf="!showForm && !(loading$ | async)">
       <div class="overflow-x-auto">
         <table class="data-table w-full">
@@ -47,7 +53,7 @@ import { Observable } from 'rxjs';
                 [class.bg-red-50]="product.estoqueQuantidade <= product.estoqueMinimo">
               <td class="p-4">
                 <div class="flex items-center gap-3">
-                  <lucide-icon [img]="Package" size="20" class="text-gray-400"></lucide-icon>
+                  <lucide-icon [img]="Pacote" size="20" class="text-gray-400"></lucide-icon>
                   <div>
                     <div class="font-medium text-gray-800">{{ product.nome }}</div>
                     <div class="text-sm text-gray-500" *ngIf="product.descricao">{{ product.descricao }}</div>
@@ -58,7 +64,7 @@ import { Observable } from 'rxjs';
               <td class="p-4 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <lucide-icon *ngIf="product.estoqueQuantidade <= product.estoqueMinimo" 
-                               [img]="AlertTriangle" 
+                               [img]="Alerta" 
                                size="16" 
                                class="text-danger"></lucide-icon>
                   <span [class.text-danger]="product.estoqueQuantidade <= product.estoqueMinimo"
@@ -71,10 +77,10 @@ import { Observable } from 'rxjs';
               <td class="p-4 text-right">
                 <div class="flex justify-end gap-2">
                   <button class="btn-icon" (click)="editProduct(product)">
-                    <lucide-icon [img]="Edit" size="18"></lucide-icon>
+                    <lucide-icon [img]="Editar" size="18"></lucide-icon>
                   </button>
                   <button class="btn-icon danger" (click)="deleteProduct(product.idProduto!)">
-                    <lucide-icon [img]="Trash2" size="18"></lucide-icon>
+                    <lucide-icon [img]="Remover" size="18"></lucide-icon>
                   </button>
                 </div>
               </td>
@@ -87,7 +93,7 @@ import { Observable } from 'rxjs';
       </div>
     </div>
 
-    <!-- Form -->
+    <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Produto</h3>
       <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="space-y-4">
@@ -146,16 +152,16 @@ import { Observable } from 'rxjs';
 })
 export class ProductsComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private dataService = inject(DataService);
+  private productService = inject(ProductService);
 
-  readonly Plus = Plus;
-  readonly Trash2 = Trash2;
-  readonly Edit = Edit;
-  readonly AlertTriangle = AlertTriangle;
-  readonly Package = Package;
+  readonly Adicionar = Plus;
+  readonly Remover = Trash2;
+  readonly Editar = Edit;
+  readonly Alerta = AlertTriangle;
+  readonly Pacote = Package;
 
-  products$!: Observable<Product[]>;
-  loading$ = this.dataService.loading$;
+  products$!: Observable<readonly Product[]>;
+  loading$ = new BehaviorSubject<boolean>(false);
 
   showForm = false;
   isEditing = false;
@@ -184,7 +190,10 @@ export class ProductsComponent implements OnInit {
   }
 
   loadProducts() {
-    this.products$ = this.dataService.getProducts();
+    this.loading$.next(true);
+    this.products$ = this.productService.getAll().pipe(
+      finalize(() => this.loading$.next(false))
+    );
   }
 
   openForm() {
@@ -220,8 +229,8 @@ export class ProductsComponent implements OnInit {
       const product: Product = this.productForm.value;
 
       const operation = this.isEditing && this.editingId
-        ? this.dataService.updateProduct(this.editingId, product)
-        : this.dataService.addProduct(product);
+        ? this.productService.update(this.editingId, product)
+        : this.productService.create(product);
 
       operation.subscribe({
         next: () => {
@@ -239,7 +248,7 @@ export class ProductsComponent implements OnInit {
 
   deleteProduct(id: number) {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
-      this.dataService.deleteProduct(id).subscribe({
+      this.productService.delete(id).subscribe({
         next: () => {
           this.loadProducts();
         },

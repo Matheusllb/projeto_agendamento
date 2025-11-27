@@ -12,6 +12,9 @@ import { ApiService, ApiResponse } from './api.service';
 @Injectable({
     providedIn: 'root'
 })
+/**
+ * @deprecated Use specific services (ProfessionalService, ClientService, etc.) instead.
+ */
 export class DataService {
     private apiService = inject(ApiService);
 
@@ -30,7 +33,7 @@ export class DataService {
                 return data;
             }),
             catchError(error => {
-                console.error('Error loading professionals:', error);
+                console.error('Erro ao carregar profissionais:', error);
                 return of([]);
             }),
             finalize(() => this.loading$.next(false))
@@ -65,7 +68,7 @@ export class DataService {
                 return data;
             }),
             catchError(error => {
-                console.error('Error loading services:', error);
+                console.error('Erro ao carregar serviços:', error);
                 return of([]);
             }),
             finalize(() => this.loading$.next(false))
@@ -100,7 +103,7 @@ export class DataService {
                 return data;
             }),
             catchError(error => {
-                console.error('Error loading clients:', error);
+                console.error('Erro ao carregar clientes:', error);
                 return of([]);
             }),
             finalize(() => this.loading$.next(false))
@@ -134,7 +137,7 @@ export class DataService {
         return this.apiService.getWithResponse<Appointment[]>(endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
-                console.error('Error loading appointments:', error);
+                console.error('Erro ao carregar agendamentos:', error);
                 return of([]);
             }),
             finalize(() => this.loading$.next(false))
