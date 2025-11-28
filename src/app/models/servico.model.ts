@@ -2,7 +2,7 @@
  * Interface que define a estrutura de dados de um Serviço (ex: Corte de Cabelo).
  * Utilizamos 'readonly' para garantir a imutabilidade dos dados no frontend.
  */
-export interface Service {
+export interface Servico {
     readonly idServicos?: number;
     readonly idEstabelecimento: number;
     readonly idTipoPrecificacao: number;

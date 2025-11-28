@@ -1,10 +1,10 @@
-const ClientModel = require('../models/client.model');
+const ClienteModel = require('../models/cliente.model');
 
-class ClientController {
+class ClienteController {
     static async getAll(req, res, next) {
         try {
-            const clients = await ClientModel.getAll();
-            res.json({ success: true, data: clients, count: clients.length });
+            const clientes = await ClienteModel.getAll();
+            res.json({ success: true, data: clientes, count: clientes.length });
         } catch (error) {
             next(error);
         }
@@ -12,11 +12,11 @@ class ClientController {
 
     static async getById(req, res, next) {
         try {
-            const client = await ClientModel.getById(req.params.id);
-            if (!client) {
+            const cliente = await ClienteModel.getById(req.params.id);
+            if (!cliente) {
                 return res.status(404).json({ success: false, message: 'Cliente não encontrado' });
             }
-            res.json({ success: true, data: client });
+            res.json({ success: true, data: cliente });
         } catch (error) {
             next(error);
         }
@@ -24,8 +24,8 @@ class ClientController {
 
     static async create(req, res, next) {
         try {
-            const client = await ClientModel.create(req.body);
-            res.status(201).json({ success: true, message: 'Cliente criado com sucesso', data: client });
+            const cliente = await ClienteModel.create(req.body);
+            res.status(201).json({ success: true, message: 'Cliente criado com sucesso', data: cliente });
         } catch (error) {
             next(error);
         }
@@ -33,11 +33,11 @@ class ClientController {
 
     static async update(req, res, next) {
         try {
-            const client = await ClientModel.update(req.params.id, req.body);
-            if (!client) {
+            const cliente = await ClienteModel.update(req.params.id, req.body);
+            if (!cliente) {
                 return res.status(404).json({ success: false, message: 'Cliente não encontrado' });
             }
-            res.json({ success: true, message: 'Cliente atualizado com sucesso', data: client });
+            res.json({ success: true, message: 'Cliente atualizado com sucesso', data: cliente });
         } catch (error) {
             next(error);
         }
@@ -45,7 +45,7 @@ class ClientController {
 
     static async delete(req, res, next) {
         try {
-            const result = await ClientModel.delete(req.params.id);
+            const result = await ClienteModel.delete(req.params.id);
             res.json(result);
         } catch (error) {
             next(error);
@@ -53,4 +53,4 @@ class ClientController {
     }
 }
 
-module.exports = ClientController;
+module.exports = ClienteController;

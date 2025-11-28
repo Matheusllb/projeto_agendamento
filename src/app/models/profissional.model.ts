@@ -3,7 +3,7 @@
  * Utilizamos 'readonly' para garantir a imutabilidade dos dados no frontend,
  * prevenindo alterações acidentais diretas nos objetos.
  */
-export interface Professional {
+export interface Profissional {
     readonly idProf?: number;
     readonly nome: string;
     readonly telefone: string;

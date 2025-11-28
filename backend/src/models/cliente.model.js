@@ -1,14 +1,14 @@
 const db = require('../config/database');
 
-class ClientModel {
+class ClienteModel {
     static async getAll() {
         const [rows] = await db.query('SELECT * FROM CLIENTE ORDER BY NOME');
-        return rows.map(this.formatClient);
+        return rows.map(this.formatCliente);
     }
 
     static async getById(id) {
         const [rows] = await db.query('SELECT * FROM CLIENTE WHERE IDCLIENTE = ?', [id]);
-        return rows.length > 0 ? this.formatClient(rows[0]) : null;
+        return rows.length > 0 ? this.formatCliente(rows[0]) : null;
     }
 
     static async create(data) {
@@ -38,7 +38,7 @@ class ClientModel {
         return { success: true, message: 'Cliente excluído com sucesso' };
     }
 
-    static formatClient(row) {
+    static formatCliente(row) {
         return {
             idCliente: row.IDCLIENTE,
             nome: row.NOME,
@@ -49,4 +49,4 @@ class ClientModel {
     }
 }
 
-module.exports = ClientModel;
+module.exports = ClienteModel;

@@ -6,17 +6,17 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { Service } from '../models/service.model';
+import { Servico } from '../models/servico.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ServiceService {
+export class ServicoService {
     private apiService = inject(ApiService);
-    private readonly endpoint = 'services';
+    private readonly endpoint = 'servicos';
 
-    getAll(): Observable<readonly Service[]> {
-        return this.apiService.getWithResponse<Service[]>(this.endpoint).pipe(
+    getAll(): Observable<readonly Servico[]> {
+        return this.apiService.getWithResponse<Servico[]>(this.endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar serviços:', error);
@@ -25,16 +25,16 @@ export class ServiceService {
         );
     }
 
-    getById(id: number): Observable<Service> {
-        return this.apiService.get<Service>(`${this.endpoint}/${id}`);
+    getById(id: number): Observable<Servico> {
+        return this.apiService.get<Servico>(`${this.endpoint}/${id}`);
     }
 
-    create(service: Service): Observable<Service> {
-        return this.apiService.post<Service>(this.endpoint, service);
+    create(servico: Servico): Observable<Servico> {
+        return this.apiService.post<Servico>(this.endpoint, servico);
     }
 
-    update(id: number, service: Service): Observable<Service> {
-        return this.apiService.put<Service>(`${this.endpoint}/${id}`, service);
+    update(id: number, servico: Servico): Observable<Servico> {
+        return this.apiService.put<Servico>(`${this.endpoint}/${id}`, servico);
     }
 
     delete(id: number): Observable<any> {

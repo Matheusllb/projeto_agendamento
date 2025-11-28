@@ -1,12 +1,12 @@
 const db = require('../config/database');
 
-class ProfessionalModel {
+class ProfissionalModel {
     // Buscar todos os profissionais
     static async getAll() {
         const [rows] = await db.query(
             'SELECT * FROM PROFISSIONAL WHERE ATIVO = 1 ORDER BY NOME'
         );
-        return rows.map(row => this.formatProfessional(row));
+        return rows.map(row => this.formatProfissional(row));
     }
 
     // Buscar profissional por ID
@@ -15,7 +15,7 @@ class ProfessionalModel {
             'SELECT * FROM PROFISSIONAL WHERE IDPROF = ?',
             [id]
         );
-        return rows.length > 0 ? this.formatProfessional(rows[0]) : null;
+        return rows.length > 0 ? this.formatProfissional(rows[0]) : null;
     }
 
     // Criar novo profissional
@@ -105,7 +105,7 @@ class ProfessionalModel {
     }
 
     // Formatar dados do profissional
-    static formatProfessional(row) {
+    static formatProfissional(row) {
         return {
             idProf: row.IDPROF,
             nome: row.NOME,
@@ -122,4 +122,4 @@ class ProfessionalModel {
     }
 }
 
-module.exports = ProfessionalModel;
+module.exports = ProfissionalModel;

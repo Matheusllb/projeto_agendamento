@@ -1,6 +1,6 @@
-const AppointmentModel = require('../models/appointment.model');
+const AgendamentoModel = require('../models/agendamento.model');
 
-class AppointmentController {
+class AgendamentoController {
     static async getAll(req, res, next) {
         try {
             const filters = {
@@ -8,8 +8,8 @@ class AppointmentController {
                 idCliente: req.query.idCliente,
                 data: req.query.data
             };
-            const appointments = await AppointmentModel.getAll(filters);
-            res.json({ success: true, data: appointments, count: appointments.length });
+            const agendamentos = await AgendamentoModel.getAll(filters);
+            res.json({ success: true, data: agendamentos, count: agendamentos.length });
         } catch (error) {
             next(error);
         }
@@ -17,11 +17,11 @@ class AppointmentController {
 
     static async getById(req, res, next) {
         try {
-            const appointment = await AppointmentModel.getById(req.params.id);
-            if (!appointment) {
+            const agendamento = await AgendamentoModel.getById(req.params.id);
+            if (!agendamento) {
                 return res.status(404).json({ success: false, message: 'Agendamento não encontrado' });
             }
-            res.json({ success: true, data: appointment });
+            res.json({ success: true, data: agendamento });
         } catch (error) {
             next(error);
         }
@@ -29,8 +29,8 @@ class AppointmentController {
 
     static async getByProfessional(req, res, next) {
         try {
-            const appointments = await AppointmentModel.getByProfessional(req.params.id);
-            res.json({ success: true, data: appointments, count: appointments.length });
+            const agendamentos = await AgendamentoModel.getByProfessional(req.params.id);
+            res.json({ success: true, data: agendamentos, count: agendamentos.length });
         } catch (error) {
             next(error);
         }
@@ -38,8 +38,8 @@ class AppointmentController {
 
     static async getByClient(req, res, next) {
         try {
-            const appointments = await AppointmentModel.getByClient(req.params.id);
-            res.json({ success: true, data: appointments, count: appointments.length });
+            const agendamentos = await AgendamentoModel.getByClient(req.params.id);
+            res.json({ success: true, data: agendamentos, count: agendamentos.length });
         } catch (error) {
             next(error);
         }
@@ -47,8 +47,8 @@ class AppointmentController {
 
     static async create(req, res, next) {
         try {
-            const appointment = await AppointmentModel.create(req.body);
-            res.status(201).json({ success: true, message: 'Agendamento criado com sucesso', data: appointment });
+            const agendamento = await AgendamentoModel.create(req.body);
+            res.status(201).json({ success: true, message: 'Agendamento criado com sucesso', data: agendamento });
         } catch (error) {
             next(error);
         }
@@ -56,11 +56,11 @@ class AppointmentController {
 
     static async update(req, res, next) {
         try {
-            const appointment = await AppointmentModel.update(req.params.id, req.body);
-            if (!appointment) {
+            const agendamento = await AgendamentoModel.update(req.params.id, req.body);
+            if (!agendamento) {
                 return res.status(404).json({ success: false, message: 'Agendamento não encontrado' });
             }
-            res.json({ success: true, message: 'Agendamento atualizado com sucesso', data: appointment });
+            res.json({ success: true, message: 'Agendamento atualizado com sucesso', data: agendamento });
         } catch (error) {
             next(error);
         }
@@ -69,11 +69,11 @@ class AppointmentController {
     static async updateStatus(req, res, next) {
         try {
             const { idStatus } = req.body;
-            const appointment = await AppointmentModel.updateStatus(req.params.id, idStatus);
-            if (!appointment) {
+            const agendamento = await AgendamentoModel.updateStatus(req.params.id, idStatus);
+            if (!agendamento) {
                 return res.status(404).json({ success: false, message: 'Agendamento não encontrado' });
             }
-            res.json({ success: true, message: 'Status atualizado com sucesso', data: appointment });
+            res.json({ success: true, message: 'Status atualizado com sucesso', data: agendamento });
         } catch (error) {
             next(error);
         }
@@ -81,7 +81,7 @@ class AppointmentController {
 
     static async delete(req, res, next) {
         try {
-            const result = await AppointmentModel.delete(req.params.id);
+            const result = await AgendamentoModel.delete(req.params.id);
             res.json(result);
         } catch (error) {
             next(error);
@@ -89,4 +89,4 @@ class AppointmentController {
     }
 }
 
-module.exports = AppointmentController;
+module.exports = AgendamentoController;

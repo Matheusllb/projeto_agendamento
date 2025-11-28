@@ -13,7 +13,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-services',
+  selector: 'app-servicos',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   template: `
@@ -97,7 +97,7 @@ import { finalize } from 'rxjs/operators';
     </div>
   `
 })
-export class ServicesComponent implements OnInit {
+export class ServicosComponent implements OnInit {
   private fb = inject(FormBuilder);
   private servicoService = inject(ServicoService);
 

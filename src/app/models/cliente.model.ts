@@ -2,7 +2,7 @@
  * Interface que define a estrutura de dados de um Cliente.
  * Utilizamos 'readonly' para garantir a imutabilidade dos dados no frontend.
  */
-export interface Client {
+export interface Cliente {
     readonly idCliente?: number;
     readonly nome: string;
     readonly telefone: string;

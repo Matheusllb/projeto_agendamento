@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ServiceController = require('../controllers/service.controller');
+const ServicoController = require('../controllers/servico.controller');
 const { body, validationResult } = require('express-validator');
 
 const validate = (req, res, next) => {
@@ -11,17 +11,17 @@ const validate = (req, res, next) => {
     next();
 };
 
-const serviceValidation = [
+const servicoValidation = [
     body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('descricao').trim().notEmpty().withMessage('Descrição é obrigatória'),
     body('preco').isFloat({ min: 0 }).withMessage('Preço deve ser maior ou igual a 0'),
     body('duracao').isInt({ min: 1 }).withMessage('Duração deve ser maior que 0'),
 ];
 
-router.get('/', ServiceController.getAll);
-router.get('/:id', ServiceController.getById);
-router.post('/', serviceValidation, validate, ServiceController.create);
-router.put('/:id', serviceValidation, validate, ServiceController.update);
-router.delete('/:id', ServiceController.delete);
+router.get('/', ServicoController.getAll);
+router.get('/:id', ServicoController.getById);
+router.post('/', servicoValidation, validate, ServicoController.create);
+router.put('/:id', servicoValidation, validate, ServicoController.update);
+router.delete('/:id', ServicoController.delete);
 
 module.exports = router;

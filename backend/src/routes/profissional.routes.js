@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ProfessionalController = require('../controllers/professional.controller');
+const ProfissionalController = require('../controllers/profissional.controller');
 const { body, validationResult } = require('express-validator');
 
 // Validation middleware
@@ -16,7 +16,7 @@ const validate = (req, res, next) => {
 };
 
 // Validation rules
-const professionalValidation = [
+const profissionalValidation = [
     body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('telefone').trim().notEmpty().withMessage('Telefone é obrigatório'),
     body('horaEntrada').optional().matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/).withMessage('Hora de entrada inválida'),
@@ -25,10 +25,10 @@ const professionalValidation = [
 ];
 
 // Routes
-router.get('/', ProfessionalController.getAll);
-router.get('/:id', ProfessionalController.getById);
-router.post('/', professionalValidation, validate, ProfessionalController.create);
-router.put('/:id', professionalValidation, validate, ProfessionalController.update);
-router.delete('/:id', ProfessionalController.delete);
+router.get('/', ProfissionalController.getAll);
+router.get('/:id', ProfissionalController.getById);
+router.post('/', profissionalValidation, validate, ProfissionalController.create);
+router.put('/:id', profissionalValidation, validate, ProfissionalController.update);
+router.delete('/:id', ProfissionalController.delete);
 
 module.exports = router;

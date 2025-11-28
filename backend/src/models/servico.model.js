@@ -1,11 +1,11 @@
 const db = require('../config/database');
 
-class ServiceModel {
+class ServicoModel {
     static async getAll() {
         const [rows] = await db.query(
             'SELECT * FROM SERVICOS WHERE ATIVO = 1 ORDER BY NOME'
         );
-        return rows.map(this.formatService);
+        return rows.map(this.formatServico);
     }
 
     static async getById(id) {
@@ -13,7 +13,7 @@ class ServiceModel {
             'SELECT * FROM SERVICOS WHERE IDSERVICOS = ?',
             [id]
         );
-        return rows.length > 0 ? this.formatService(rows[0]) : null;
+        return rows.length > 0 ? this.formatServico(rows[0]) : null;
     }
 
     static async create(data) {
@@ -48,7 +48,7 @@ class ServiceModel {
         return { success: true, message: 'Serviço desativado com sucesso' };
     }
 
-    static formatService(row) {
+    static formatServico(row) {
         return {
             idServicos: row.IDSERVICOS,
             idEstabelecimento: row.IDESTABELECIMENTO,
@@ -63,4 +63,4 @@ class ServiceModel {
     }
 }
 
-module.exports = ServiceModel;
+module.exports = ServicoModel;

@@ -13,7 +13,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-professionals',
+  selector: 'app-profissionais',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   template: `
@@ -105,7 +105,7 @@ import { finalize } from 'rxjs/operators';
     </div>
   `
 })
-export class ProfessionalsComponent implements OnInit {
+export class ProfissionaisComponent implements OnInit {
   private fb = inject(FormBuilder);
   private profissionalService = inject(ProfissionalService);
 

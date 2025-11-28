@@ -9,10 +9,10 @@ require('./config/database');
 const errorHandler = require('./middleware/error.middleware');
 
 // Importar rotas
-const professionalRoutes = require('./routes/professional.routes');
-const serviceRoutes = require('./routes/service.routes');
-const clientRoutes = require('./routes/client.routes');
-const appointmentRoutes = require('./routes/appointment.routes');
+const profissionalRoutes = require('./routes/profissional.routes');
+const servicoRoutes = require('./routes/servico.routes');
+const clienteRoutes = require('./routes/cliente.routes');
+const agendamentoRoutes = require('./routes/agendamento.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,10 +23,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rotas
-app.use('/api/professionals', professionalRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/appointments', appointmentRoutes);
+app.use('/api/profissionais', profissionalRoutes);
+app.use('/api/servicos', servicoRoutes);
+app.use('/api/clientes', clienteRoutes);
+app.use('/api/agendamentos', agendamentoRoutes);
 
 // Verificação de saúde
 app.get('/api/health', (req, res) => {

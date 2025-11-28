@@ -1,6 +1,6 @@
 const db = require('../config/database');
 
-class AppointmentModel {
+class AgendamentoModel {
     static async getAll(filters = {}) {
         let query = `
             SELECT a.*, 
@@ -33,7 +33,7 @@ class AppointmentModel {
         query += ' ORDER BY a.DATA DESC, a.HORARIO DESC';
 
         const [rows] = await db.query(query, params);
-        return rows.map(this.formatAppointment);
+        return rows.map(this.formatAgendamento);
     }
 
     static async getById(id) {
@@ -48,7 +48,7 @@ class AppointmentModel {
             LEFT JOIN STATUS s ON a.IDSTATUS = s.IDSTATUS
             WHERE a.IDAGENDAMENTO = ?
         `, [id]);
-        return rows.length > 0 ? this.formatAppointment(rows[0]) : null;
+        return rows.length > 0 ? this.formatAgendamento(rows[0]) : null;
     }
 
     static async getByProfessional(idProfissional) {
@@ -123,7 +123,7 @@ class AppointmentModel {
         return { success: true, message: 'Agendamento cancelado com sucesso' };
     }
 
-    static formatAppointment(row) {
+    static formatAgendamento(row) {
         return {
             idAgendamento: row.IDAGENDAMENTO,
             idProfissional: row.IDPROFISSIONAL,
@@ -150,4 +150,4 @@ class AppointmentModel {
     }
 }
 
-module.exports = AppointmentModel;
+module.exports = AgendamentoModel;

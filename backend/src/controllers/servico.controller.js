@@ -1,10 +1,10 @@
-const ServiceModel = require('../models/service.model');
+const ServicoModel = require('../models/servico.model');
 
-class ServiceController {
+class ServicoController {
     static async getAll(req, res, next) {
         try {
-            const services = await ServiceModel.getAll();
-            res.json({ success: true, data: services, count: services.length });
+            const servicos = await ServicoModel.getAll();
+            res.json({ success: true, data: servicos, count: servicos.length });
         } catch (error) {
             next(error);
         }
@@ -12,11 +12,11 @@ class ServiceController {
 
     static async getById(req, res, next) {
         try {
-            const service = await ServiceModel.getById(req.params.id);
-            if (!service) {
+            const servico = await ServicoModel.getById(req.params.id);
+            if (!servico) {
                 return res.status(404).json({ success: false, message: 'Serviço não encontrado' });
             }
-            res.json({ success: true, data: service });
+            res.json({ success: true, data: servico });
         } catch (error) {
             next(error);
         }
@@ -24,8 +24,8 @@ class ServiceController {
 
     static async create(req, res, next) {
         try {
-            const service = await ServiceModel.create(req.body);
-            res.status(201).json({ success: true, message: 'Serviço criado com sucesso', data: service });
+            const servico = await ServicoModel.create(req.body);
+            res.status(201).json({ success: true, message: 'Serviço criado com sucesso', data: servico });
         } catch (error) {
             next(error);
         }
@@ -33,11 +33,11 @@ class ServiceController {
 
     static async update(req, res, next) {
         try {
-            const service = await ServiceModel.update(req.params.id, req.body);
-            if (!service) {
+            const servico = await ServicoModel.update(req.params.id, req.body);
+            if (!servico) {
                 return res.status(404).json({ success: false, message: 'Serviço não encontrado' });
             }
-            res.json({ success: true, message: 'Serviço atualizado com sucesso', data: service });
+            res.json({ success: true, message: 'Serviço atualizado com sucesso', data: servico });
         } catch (error) {
             next(error);
         }
@@ -45,7 +45,7 @@ class ServiceController {
 
     static async delete(req, res, next) {
         try {
-            const result = await ServiceModel.delete(req.params.id);
+            const result = await ServicoModel.delete(req.params.id);
             res.json(result);
         } catch (error) {
             next(error);
@@ -53,4 +53,4 @@ class ServiceController {
     }
 }
 
-module.exports = ServiceController;
+module.exports = ServicoController;

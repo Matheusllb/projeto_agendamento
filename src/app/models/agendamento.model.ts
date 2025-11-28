@@ -2,7 +2,7 @@
  * Interface que define a estrutura de dados de um Agendamento.
  * Utilizamos 'readonly' para garantir a imutabilidade dos dados no frontend.
  */
-export interface Appointment {
+export interface Agendamento {
     readonly idAgendamento?: number;
     readonly idProfissional: number;
     readonly idCliente: number;

@@ -7,17 +7,17 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { Professional } from '../models/professional.model';
+import { Profissional } from '../models/profissional.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ProfessionalService {
+export class ProfissionalService {
     private apiService = inject(ApiService);
-    private readonly endpoint = 'professionals';
+    private readonly endpoint = 'profissionais';
 
-    getAll(): Observable<readonly Professional[]> {
-        return this.apiService.getWithResponse<Professional[]>(this.endpoint).pipe(
+    getAll(): Observable<readonly Profissional[]> {
+        return this.apiService.getWithResponse<Profissional[]>(this.endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar profissionais:', error);
@@ -26,16 +26,16 @@ export class ProfessionalService {
         );
     }
 
-    getById(id: number): Observable<Professional> {
-        return this.apiService.get<Professional>(`${this.endpoint}/${id}`);
+    getById(id: number): Observable<Profissional> {
+        return this.apiService.get<Profissional>(`${this.endpoint}/${id}`);
     }
 
-    create(professional: Professional): Observable<Professional> {
-        return this.apiService.post<Professional>(this.endpoint, professional);
+    create(profissional: Profissional): Observable<Profissional> {
+        return this.apiService.post<Profissional>(this.endpoint, profissional);
     }
 
-    update(id: number, professional: Professional): Observable<Professional> {
-        return this.apiService.put<Professional>(`${this.endpoint}/${id}`, professional);
+    update(id: number, profissional: Profissional): Observable<Profissional> {
+        return this.apiService.put<Profissional>(`${this.endpoint}/${id}`, profissional);
     }
 
     delete(id: number): Observable<any> {

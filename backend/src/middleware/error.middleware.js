@@ -2,7 +2,7 @@ const errorHandler = (err, req, res, next) => {
     console.error('Error:', err);
     console.error('Error stack:', err.stack);
 
-    // MySQL errors
+    // Erros MySQL
     if (err.code === 'ER_DUP_ENTRY') {
         return res.status(409).json({
             success: false,
@@ -19,7 +19,7 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
-    // Validation errors
+    // Erros de validação
     if (err.name === 'ValidationError') {
         return res.status(400).json({
             success: false,
@@ -28,7 +28,7 @@ const errorHandler = (err, req, res, next) => {
         });
     }
 
-    // Default error
+    // Erros padrão
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Erro interno do servidor',

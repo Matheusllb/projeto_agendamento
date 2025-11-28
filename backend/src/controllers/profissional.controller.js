@@ -1,14 +1,14 @@
-const ProfessionalModel = require('../models/professional.model');
+const ProfissionalModel = require('../models/profissional.model');
 
-class ProfessionalController {
+class ProfissionalController {
     // Buscar todos os profissionais
     static async getAll(req, res, next) {
         try {
-            const professionals = await ProfessionalModel.getAll();
+            const profissionais = await ProfissionalModel.getAll();
             res.json({
                 success: true,
-                data: professionals,
-                count: professionals.length
+                data: profissionais,
+                count: profissionais.length
             });
         } catch (error) {
             next(error);
@@ -19,9 +19,9 @@ class ProfessionalController {
     static async getById(req, res, next) {
         try {
             const { id } = req.params;
-            const professional = await ProfessionalModel.getById(id);
+            const profissional = await ProfissionalModel.getById(id);
 
-            if (!professional) {
+            if (!profissional) {
                 return res.status(404).json({
                     success: false,
                     message: 'Profissional não encontrado'
@@ -30,7 +30,7 @@ class ProfessionalController {
 
             res.json({
                 success: true,
-                data: professional
+                data: profissional
             });
         } catch (error) {
             next(error);
@@ -40,11 +40,11 @@ class ProfessionalController {
     // Criar novo profissional
     static async create(req, res, next) {
         try {
-            const professional = await ProfessionalModel.create(req.body);
+            const profissional = await ProfissionalModel.create(req.body);
             res.status(201).json({
                 success: true,
                 message: 'Profissional criado com sucesso',
-                data: professional
+                data: profissional
             });
         } catch (error) {
             next(error);
@@ -55,9 +55,9 @@ class ProfessionalController {
     static async update(req, res, next) {
         try {
             const { id } = req.params;
-            const professional = await ProfessionalModel.update(id, req.body);
+            const profissional = await ProfissionalModel.update(id, req.body);
 
-            if (!professional) {
+            if (!profissional) {
                 return res.status(404).json({
                     success: false,
                     message: 'Profissional não encontrado'
@@ -67,7 +67,7 @@ class ProfessionalController {
             res.json({
                 success: true,
                 message: 'Profissional atualizado com sucesso',
-                data: professional
+                data: profissional
             });
         } catch (error) {
             next(error);
@@ -78,7 +78,7 @@ class ProfessionalController {
     static async delete(req, res, next) {
         try {
             const { id } = req.params;
-            const result = await ProfessionalModel.delete(id);
+            const result = await ProfissionalModel.delete(id);
             res.json(result);
         } catch (error) {
             next(error);
@@ -86,4 +86,4 @@ class ProfessionalController {
     }
 }
 
-module.exports = ProfessionalController;
+module.exports = ProfissionalController;
