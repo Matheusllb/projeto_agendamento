@@ -17,10 +17,15 @@ const clienteValidation = [
     body('email').optional().isEmail().withMessage('Email inválido'),
 ];
 
-router.get('/', ClienteController.getAll);
-router.get('/:id', ClienteController.getById);
-router.post('/', clienteValidation, validate, ClienteController.create);
-router.put('/:id', clienteValidation, validate, ClienteController.update);
-router.delete('/:id', ClienteController.delete);
+// A rota GET / (que combinada com /api/clientes vira /api/clientes/)
+router.get('/', ClienteController.buscarTodos);
+// A rota GET /:id (que combinada com /api/clientes vira /api/clientes/:id)
+router.get('/:id', ClienteController.buscarPorId);
+// A rota POST / (que combinada com /api/clientes vira /api/clientes/)
+router.post('/', clienteValidation, validate, ClienteController.criar);
+// A rota PUT /:id (que combinada com /api/clientes vira /api/clientes/:id)
+router.put('/:id', clienteValidation, validate, ClienteController.atualizar);
+// A rota DELETE /:id (que combinada com /api/clientes vira /api/clientes/:id)
+router.delete('/:id', ClienteController.deletar);
 
 module.exports = router;

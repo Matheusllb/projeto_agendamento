@@ -1,53 +1,70 @@
 const ClienteModel = require('../models/cliente.model');
 
 class ClienteController {
-    static async getAll(req, res, next) {
+    static async buscarTodos(req, res, next) {
         try {
+            // Chama o Model para buscar os dados
             const clientes = await ClienteModel.getAll();
+            // Retorna os dados formatados
             res.json({ success: true, data: clientes, count: clientes.length });
         } catch (error) {
+            // Se houver erro, passa para o middleware de erros
             next(error);
         }
     }
 
-    static async getById(req, res, next) {
+    static async buscarPorId(req, res, next) {
         try {
+            // Chama o Model para buscar os dados
             const cliente = await ClienteModel.getById(req.params.id);
+            // Verifica se o cliente existe
             if (!cliente) {
                 return res.status(404).json({ success: false, message: 'Cliente não encontrado' });
             }
+            // Retorna os dados formatados
             res.json({ success: true, data: cliente });
         } catch (error) {
+            // Se houver erro, passa para o middleware de erros
             next(error);
         }
     }
 
-    static async create(req, res, next) {
+    static async criar(req, res, next) {
         try {
+            // Chama o Model para inserir os dados
             const cliente = await ClienteModel.create(req.body);
+            // Retorna os dados formatados
             res.status(201).json({ success: true, message: 'Cliente criado com sucesso', data: cliente });
         } catch (error) {
+            // Se houver erro, passa para o middleware de erros
             next(error);
         }
     }
 
-    static async update(req, res, next) {
+    static async atualizar(req, res, next) {
         try {
+            // Chama o Model para atualizar os dados
             const cliente = await ClienteModel.update(req.params.id, req.body);
+            // Verifica se o cliente existe
             if (!cliente) {
                 return res.status(404).json({ success: false, message: 'Cliente não encontrado' });
             }
+            // Retorna os dados formatados
             res.json({ success: true, message: 'Cliente atualizado com sucesso', data: cliente });
         } catch (error) {
+            // Se houver erro, passa para o middleware de erros
             next(error);
         }
     }
 
-    static async delete(req, res, next) {
+    static async deletar(req, res, next) {
         try {
+            // Chama o Model para deletar os dados
             const result = await ClienteModel.delete(req.params.id);
-            res.json(result);
+            // Retorna os dados formatados
+            res.json({ success: true, message: 'Cliente deletado com sucesso', data: cliente });
         } catch (error) {
+            // Se houver erro, passa para o middleware de erros
             next(error);
         }
     }

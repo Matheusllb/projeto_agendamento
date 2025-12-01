@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// Create connection pool
+// Criação de pool de conexão através do arquivo .env
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -12,17 +12,18 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 0
+    keepAliveInitialDelay: 0,
+    charset: 'utf8mb4'
 });
 
-// Test connection
+// Teste de conexão
 pool.getConnection()
     .then(connection => {
-        console.log('Conexão com o Banco de Dados estabelecida com sucesso!');
+        console.log('\nConexão com o Banco de Dados estabelecida com sucesso!\n');
         connection.release();
     })
     .catch(err => {
-        console.error('❌ Error connecting to MySQL:', err.message);
+        console.error('\nErro ao conectar ao MySQL:\n', err.message);
         process.exit(1);
     });
 

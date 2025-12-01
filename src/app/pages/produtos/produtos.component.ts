@@ -13,13 +13,13 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-products',
+  selector: 'app-produtos',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
   template: `
     <div class="page-header">
       <h2>Produtos</h2>
-      <button class="btn btn-primary" (click)="openForm()">
+      <button class="btn btn-primary" (click)="abrirFormulario()">
         <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Produto
       </button>
     </div>
@@ -76,10 +76,10 @@ import { finalize } from 'rxjs/operators';
               <td class="p-4 text-right font-medium text-gray-800">{{ product.precoVenda | currency:'BRL' }}</td>
               <td class="p-4 text-right">
                 <div class="flex justify-end gap-2">
-                  <button class="btn-icon" (click)="editProduct(product)">
+                  <button class="btn-icon" (click)="editarProduto(product)">
                     <lucide-icon [img]="Editar" size="18"></lucide-icon>
                   </button>
-                  <button class="btn-icon danger" (click)="deleteProduct(product.idProduto!)">
+                  <button class="btn-icon danger" (click)="deletarProduto(product.idProduto!)">
                     <lucide-icon [img]="Remover" size="18"></lucide-icon>
                   </button>
                 </div>
@@ -96,7 +96,7 @@ import { finalize } from 'rxjs/operators';
     <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Produto</h3>
-      <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="space-y-4">
+      <form [formGroup]="productForm" (ngSubmit)="salvarProduto()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome do Produto</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -141,7 +141,7 @@ import { finalize } from 'rxjs/operators';
         </div>
         
         <div class="flex justify-end gap-3 mt-6">
-          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
           <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
@@ -150,7 +150,7 @@ import { finalize } from 'rxjs/operators';
     </div>
   `
 })
-export class ProductsComponent implements OnInit {
+export class ProdutosComponent implements OnInit {
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
 
@@ -186,17 +186,25 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadProducts();
+    this.carregarProdutos();
   }
 
-  loadProducts() {
+  carregarProdutos() {
     this.loading$.next(true);
-    this.products$ = this.productService.getAll().pipe(
+    this.productService.getAll().pipe(
       finalize(() => this.loading$.next(false))
-    );
+    ).subscribe({
+      next: (data) => {
+        this.products$ = new BehaviorSubject(data).asObservable();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar produtos:', error);
+        this.errorMessage = 'Erro ao carregar produtos';
+      }
+    });
   }
 
-  openForm() {
+  abrirFormulario() {
     this.showForm = true;
     this.isEditing = false;
     this.productForm.reset({
@@ -209,20 +217,20 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  editProduct(product: Product) {
+  editarProduto(product: Product) {
     this.showForm = true;
     this.isEditing = true;
     this.editingId = product.idProduto!;
     this.productForm.patchValue(product);
   }
 
-  cancelForm() {
+  cancelarFormulario() {
     this.showForm = false;
     this.editingId = null;
     this.errorMessage = '';
   }
 
-  saveProduct() {
+  salvarProduto() {
     if (this.productForm.valid) {
       this.saving = true;
       this.errorMessage = '';
@@ -235,8 +243,8 @@ export class ProductsComponent implements OnInit {
       operation.subscribe({
         next: () => {
           this.saving = false;
-          this.cancelForm();
-          this.loadProducts();
+          this.cancelarFormulario();
+          this.carregarProdutos();
         },
         error: (error) => {
           this.saving = false;
@@ -246,11 +254,11 @@ export class ProductsComponent implements OnInit {
     }
   }
 
-  deleteProduct(id: number) {
+  deletarProduto(id: number) {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
       this.productService.delete(id).subscribe({
         next: () => {
-          this.loadProducts();
+          this.carregarProdutos();
         },
         error: (error) => {
           this.errorMessage = error.message || 'Erro ao excluir produto';

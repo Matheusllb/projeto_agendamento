@@ -18,13 +18,13 @@ const agendamentoValidation = [
     body('horario').matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/).withMessage('Horário inválido (formato: HH:mm:ss)'),
 ];
 
-router.get('/', AgendamentoController.getAll);
-router.get('/:id', AgendamentoController.getById);
-router.get('/professional/:id', AgendamentoController.getByProfessional);
-router.get('/client/:id', AgendamentoController.getByClient);
-router.post('/', agendamentoValidation, validate, AgendamentoController.create);
-router.put('/:id', agendamentoValidation, validate, AgendamentoController.update);
-router.patch('/:id/status', AgendamentoController.updateStatus);
-router.delete('/:id', AgendamentoController.delete);
+router.get('/', AgendamentoController.buscarTodos);
+router.get('/:id', AgendamentoController.buscarPorId);
+router.get('/professional/:id', AgendamentoController.buscarPorProfissional);
+router.get('/client/:id', AgendamentoController.buscarPorCliente);
+router.post('/', agendamentoValidation, validate, AgendamentoController.criar);
+router.put('/:id', agendamentoValidation, validate, AgendamentoController.atualizar);
+router.patch('/:id/status', AgendamentoController.atualizarStatus);
+router.delete('/:id', AgendamentoController.deletar);
 
 module.exports = router;

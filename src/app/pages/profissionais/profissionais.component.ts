@@ -19,7 +19,7 @@ import { finalize } from 'rxjs/operators';
   template: `
     <div class="page-header">
       <h2>Profissionais</h2>
-      <button class="btn btn-primary" (click)="openForm()">
+      <button class="btn btn-primary" (click)="abrirFormulario()">
         <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Profissional
       </button>
     </div>
@@ -54,10 +54,10 @@ import { finalize } from 'rxjs/operators';
           </div>
         </div>
         <div class="flex justify-end gap-2 mt-auto pt-4 border-t border-gray-100">
-          <button class="btn-icon" (click)="editProfessional(prof)">
+          <button class="btn-icon" (click)="editarProfissional(prof)">
             <lucide-icon [img]="Editar" size="18"></lucide-icon>
           </button>
-          <button class="btn-icon danger" (click)="deleteProfessional(prof.idProf!)">
+          <button class="btn-icon danger" (click)="deletarProfissional(prof.idProf!)">
             <lucide-icon [img]="Remover" size="18"></lucide-icon>
           </button>
         </div>
@@ -67,7 +67,7 @@ import { finalize } from 'rxjs/operators';
     <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Profissional</h3>
-      <form [formGroup]="profForm" (ngSubmit)="saveProfessional()" class="space-y-4">
+      <form [formGroup]="profForm" (ngSubmit)="salvarProfissional()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -96,7 +96,7 @@ import { finalize } from 'rxjs/operators';
         </div>
         
         <div class="flex justify-end gap-3 mt-6">
-          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
           <button type="submit" class="btn btn-primary" [disabled]="profForm.invalid || saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
@@ -141,17 +141,25 @@ export class ProfissionaisComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadProfessionals();
+    this.carregarProfissionais();
   }
 
-  loadProfessionals() {
+  carregarProfissionais() {
     this.loading$.next(true);
-    this.professionals$ = this.profissionalService.getAll().pipe(
+    this.profissionalService.getAll().pipe(
       finalize(() => this.loading$.next(false))
-    );
+    ).subscribe({
+      next: (data) => {
+        this.professionals$ = new BehaviorSubject(data).asObservable();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar profissionais:', error);
+        this.errorMessage = 'Erro ao carregar profissionais';
+      }
+    });
   }
 
-  openForm() {
+  abrirFormulario() {
     this.showForm = true;
     this.isEditing = false;
     this.profForm.reset({
@@ -165,7 +173,7 @@ export class ProfissionaisComponent implements OnInit {
     });
   }
 
-  editProfessional(prof: Profissional) {
+  editarProfissional(prof: Profissional) {
     this.showForm = true;
     this.isEditing = true;
     this.editingId = prof.idProf!;
@@ -182,13 +190,13 @@ export class ProfissionaisComponent implements OnInit {
     });
   }
 
-  cancelForm() {
+  cancelarFormulario() {
     this.showForm = false;
     this.editingId = null;
     this.errorMessage = '';
   }
 
-  saveProfessional() {
+  salvarProfissional() {
     if (this.profForm.valid) {
       this.saving = true;
       this.errorMessage = '';
@@ -207,8 +215,8 @@ export class ProfissionaisComponent implements OnInit {
       operation.subscribe({
         next: () => {
           this.saving = false;
-          this.cancelForm();
-          this.loadProfessionals();
+          this.cancelarFormulario();
+          this.carregarProfissionais();
         },
         error: (error) => {
           this.saving = false;
@@ -218,11 +226,11 @@ export class ProfissionaisComponent implements OnInit {
     }
   }
 
-  deleteProfessional(id: number) {
+  deletarProfissional(id: number) {
     if (confirm('Tem certeza que deseja desativar este profissional?')) {
       this.profissionalService.delete(id).subscribe({
         next: () => {
-          this.loadProfessionals();
+          this.carregarProfissionais();
         },
         error: (error) => {
           this.errorMessage = error.message || 'Erro ao excluir profissional';

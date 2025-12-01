@@ -1,7 +1,7 @@
 const AgendamentoModel = require('../models/agendamento.model');
 
 class AgendamentoController {
-    static async getAll(req, res, next) {
+    static async buscarTodos(req, res, next) {
         try {
             const filters = {
                 idProfissional: req.query.idProfissional,
@@ -15,7 +15,7 @@ class AgendamentoController {
         }
     }
 
-    static async getById(req, res, next) {
+    static async buscarPorId(req, res, next) {
         try {
             const agendamento = await AgendamentoModel.getById(req.params.id);
             if (!agendamento) {
@@ -27,7 +27,7 @@ class AgendamentoController {
         }
     }
 
-    static async getByProfessional(req, res, next) {
+    static async buscarPorProfissional(req, res, next) {
         try {
             const agendamentos = await AgendamentoModel.getByProfessional(req.params.id);
             res.json({ success: true, data: agendamentos, count: agendamentos.length });
@@ -36,7 +36,7 @@ class AgendamentoController {
         }
     }
 
-    static async getByClient(req, res, next) {
+    static async buscarPorCliente(req, res, next) {
         try {
             const agendamentos = await AgendamentoModel.getByClient(req.params.id);
             res.json({ success: true, data: agendamentos, count: agendamentos.length });
@@ -45,7 +45,7 @@ class AgendamentoController {
         }
     }
 
-    static async create(req, res, next) {
+    static async criar(req, res, next) {
         try {
             const agendamento = await AgendamentoModel.create(req.body);
             res.status(201).json({ success: true, message: 'Agendamento criado com sucesso', data: agendamento });
@@ -54,7 +54,7 @@ class AgendamentoController {
         }
     }
 
-    static async update(req, res, next) {
+    static async atualizar(req, res, next) {
         try {
             const agendamento = await AgendamentoModel.update(req.params.id, req.body);
             if (!agendamento) {
@@ -66,7 +66,7 @@ class AgendamentoController {
         }
     }
 
-    static async updateStatus(req, res, next) {
+    static async atualizarStatus(req, res, next) {
         try {
             const { idStatus } = req.body;
             const agendamento = await AgendamentoModel.updateStatus(req.params.id, idStatus);
@@ -79,7 +79,7 @@ class AgendamentoController {
         }
     }
 
-    static async delete(req, res, next) {
+    static async deletar(req, res, next) {
         try {
             const result = await AgendamentoModel.delete(req.params.id);
             res.json(result);

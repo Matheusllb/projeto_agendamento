@@ -20,31 +20,31 @@ import { LucideAngularModule, LayoutDashboard, Calendar, UserCircle, Handshake, 
           </a>
         </li>
         <li>
-          <a routerLink="/appointments" routerLinkActive="bg-primary-light text-primary border-primary"
+          <a routerLink="/agendamentos" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
             <lucide-icon [img]="Agendamentos" class="mr-3 w-5 h-5"></lucide-icon> Agendamentos
           </a>
         </li>
         <li>
-          <a routerLink="/professionals" routerLinkActive="bg-primary-light text-primary border-primary"
+          <a routerLink="/profissionais" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
             <lucide-icon [img]="Profissionais" class="mr-3 w-5 h-5"></lucide-icon> Profissionais
           </a>
         </li>
         <li>
-          <a routerLink="/services" routerLinkActive="bg-primary-light text-primary border-primary"
+          <a routerLink="/servicos" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
             <lucide-icon [img]="Servicos" class="mr-3 w-5 h-5"></lucide-icon> Serviços
           </a>
         </li>
         <li>
-          <a routerLink="/clients" routerLinkActive="bg-primary-light text-primary border-primary"
+          <a routerLink="/clientes" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
             <lucide-icon [img]="Clientes" class="mr-3 w-5 h-5"></lucide-icon> Clientes
           </a>
         </li>
         <li>
-          <a routerLink="/products" routerLinkActive="bg-primary-light text-primary border-primary"
+          <a routerLink="/produtos" routerLinkActive="bg-primary-light text-primary border-primary"
              class="flex items-center px-6 py-3 text-text-secondary hover:bg-gray-50 hover:text-primary transition-colors border-l-4 border-transparent">
             <lucide-icon [img]="Estoque" class="mr-3 w-5 h-5"></lucide-icon> Estoque
           </a>

@@ -1,9 +1,5 @@
 # Guia de Teste - Conexão Backend
 
-## Problema: "Carregando..." Infinito
-
-Se as telas ficam em "Carregando..." infinitamente, siga estes passos:
-
 ### 1. Verificar se o Backend está Rodando
 
 Abra um novo terminal e execute:
@@ -42,9 +38,9 @@ mysql -u root -p < script_banco.sql
 
 Abra o navegador em:
 - Health Check: http://localhost:3000/api/health
-- Profissionais: http://localhost:3000/api/professionals
-- Serviços: http://localhost:3000/api/services
-- Clientes: http://localhost:3000/api/clients
+- Profissionais: http://localhost:3000/api/profissionais
+- Serviços: http://localhost:3000/api/servicos
+- Clientes: http://localhost:3000/api/clientes
 
 ### 5. Verificar Console do Navegador
 
@@ -63,19 +59,19 @@ Se o backend não estiver disponível, a aplicação agora mostra uma lista vazi
 
 ### Criar um Cliente
 ```bash
-curl -X POST http://localhost:3000/api/clients \
+curl -X POST http://localhost:3000/api/clientes \
   -H "Content-Type: application/json" \
   -d '{"nome":"João Silva","telefone":"11999999999","email":"joao@email.com"}'
 ```
 
 ### Listar Profissionais
 ```bash
-curl http://localhost:3000/api/professionals
+curl http://localhost:3000/api/profissionais
 ```
 
 ### Criar um Serviço
 ```bash
-curl -X POST http://localhost:3000/api/services \
+curl -X POST http://localhost:3000/api/servicos \
   -H "Content-Type: application/json" \
   -d '{"nome":"Corte Masculino","descricao":"Corte tradicional","preco":45,"duracao":30,"idEstabelecimento":1,"idTipoPrecificacao":1}'
 ```

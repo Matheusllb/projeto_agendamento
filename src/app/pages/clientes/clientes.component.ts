@@ -19,7 +19,7 @@ import { finalize } from 'rxjs/operators';
   template: `
     <div class="page-header">
       <h2>Clientes</h2>
-      <button class="btn btn-primary" (click)="openForm()">
+      <button class="btn btn-primary" (click)="abrirFormulario()">
         <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Cliente
       </button>
     </div>
@@ -62,10 +62,10 @@ import { finalize } from 'rxjs/operators';
                   <button class="btn-icon" title="Histórico">
                     <lucide-icon [img]="Historico" size="18"></lucide-icon>
                   </button>
-                  <button class="btn-icon" (click)="editClient(client)">
+                  <button class="btn-icon" (click)="editarCliente(client)">
                     <lucide-icon [img]="Editar" size="18"></lucide-icon>
                   </button>
-                  <button class="btn-icon danger" (click)="deleteClient(client.idCliente!)">
+                  <button class="btn-icon danger" (click)="deletarCliente(client.idCliente!)">
                     <lucide-icon [img]="Remover" size="18"></lucide-icon>
                   </button>
                 </div>
@@ -82,7 +82,7 @@ import { finalize } from 'rxjs/operators';
     <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Cliente</h3>
-      <form [formGroup]="clientForm" (ngSubmit)="saveClient()" class="space-y-4">
+      <form [formGroup]="clientForm" (ngSubmit)="salvarCliente()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome Completo</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -105,7 +105,7 @@ import { finalize } from 'rxjs/operators';
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
-          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
           <button type="submit" class="btn btn-primary" [disabled]="clientForm.invalid || saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
@@ -145,36 +145,44 @@ export class ClientesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadClients();
+    this.carregarClientes();
   }
 
-  loadClients() {
+  carregarClientes() {
     this.loading$.next(true);
-    this.clients$ = this.clienteService.getAll().pipe(
+    this.clienteService.getAll().pipe(
       finalize(() => this.loading$.next(false))
-    );
+    ).subscribe({
+      next: (data) => {
+        this.clients$ = new BehaviorSubject(data).asObservable();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar clientes:', error);
+        this.errorMessage = 'Erro ao carregar clientes';
+      }
+    });
   }
 
-  openForm() {
+  abrirFormulario() {
     this.showForm = true;
     this.isEditing = false;
     this.clientForm.reset();
   }
 
-  editClient(client: Cliente) {
+  editarCliente(client: Cliente) {
     this.showForm = true;
     this.isEditing = true;
     this.editingId = client.idCliente!;
     this.clientForm.patchValue(client);
   }
 
-  cancelForm() {
+  cancelarFormulario() {
     this.showForm = false;
     this.editingId = null;
     this.errorMessage = '';
   }
 
-  saveClient() {
+  salvarCliente() {
     if (this.clientForm.valid) {
       this.saving = true;
       this.errorMessage = '';
@@ -187,8 +195,8 @@ export class ClientesComponent implements OnInit {
       operation.subscribe({
         next: () => {
           this.saving = false;
-          this.cancelForm();
-          this.loadClients();
+          this.cancelarFormulario();
+          this.carregarClientes();
         },
         error: (error) => {
           this.saving = false;
@@ -198,11 +206,11 @@ export class ClientesComponent implements OnInit {
     }
   }
 
-  deleteClient(id: number) {
+  deletarCliente(id: number) {
     if (confirm('Tem certeza que deseja excluir este cliente?')) {
       this.clienteService.delete(id).subscribe({
         next: () => {
-          this.loadClients();
+          this.carregarClientes();
         },
         error: (error) => {
           this.errorMessage = error.message || 'Erro ao excluir cliente';

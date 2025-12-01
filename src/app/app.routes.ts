@@ -5,17 +5,17 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SettingsComponent } from './pages/settings/settings.component';
-import { ProfessionalsComponent } from './pages/professionals/professionals.component';
-import { ServicesComponent } from './pages/services/services.component';
-import { ClientsComponent } from './pages/clients/clients.component';
-import { ProductsComponent } from './pages/products/products.component';
+import { ProfissionaisComponent } from './pages/profissionais/profissionais.component';
+import { ServicosComponent } from './pages/servicos/servicos.component';
+import { ClientesComponent } from './pages/clientes/clientes.component';
+import { ProdutosComponent } from './pages/produtos/produtos.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     { path: 'dashboard', component: DashboardComponent },
     { path: 'settings', component: SettingsComponent },
-    { path: 'professionals', component: ProfessionalsComponent },
-    { path: 'services', component: ServicesComponent },
-    { path: 'clients', component: ClientsComponent },
-    { path: 'products', component: ProductsComponent },
+    { path: 'profissionais', component: ProfissionaisComponent },
+    { path: 'servicos', component: ServicosComponent },
+    { path: 'clientes', component: ClientesComponent },
+    { path: 'produtos', component: ProdutosComponent },
 ];

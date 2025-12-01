@@ -2,11 +2,14 @@ const db = require('../config/database');
 
 class ClienteModel {
     static async getAll() {
+        // Executa a query SQL
         const [rows] = await db.query('SELECT * FROM CLIENTE ORDER BY NOME');
+        // Formata cada linha do resultado
         return rows.map(this.formatCliente);
     }
 
     static async getById(id) {
+        // Executa a query SQL
         const [rows] = await db.query('SELECT * FROM CLIENTE WHERE IDCLIENTE = ?', [id]);
         return rows.length > 0 ? this.formatCliente(rows[0]) : null;
     }
@@ -40,6 +43,8 @@ class ClienteModel {
 
     static formatCliente(row) {
         return {
+            // Converte os nomes das colunas do MySQL (MAIÚSCULAS)
+            // para camelCase (padrão JavaScript)   
             idCliente: row.IDCLIENTE,
             nome: row.NOME,
             telefone: row.TELEFONE,

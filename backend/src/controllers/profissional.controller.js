@@ -2,7 +2,7 @@ const ProfissionalModel = require('../models/profissional.model');
 
 class ProfissionalController {
     // Buscar todos os profissionais
-    static async getAll(req, res, next) {
+    static async buscarTodos(req, res, next) {
         try {
             const profissionais = await ProfissionalModel.getAll();
             res.json({
@@ -16,7 +16,7 @@ class ProfissionalController {
     }
 
     // Buscar profissional por ID
-    static async getById(req, res, next) {
+    static async buscarPorId(req, res, next) {
         try {
             const { id } = req.params;
             const profissional = await ProfissionalModel.getById(id);
@@ -38,7 +38,7 @@ class ProfissionalController {
     }
 
     // Criar novo profissional
-    static async create(req, res, next) {
+    static async criar(req, res, next) {
         try {
             const profissional = await ProfissionalModel.create(req.body);
             res.status(201).json({
@@ -52,7 +52,7 @@ class ProfissionalController {
     }
 
     // Atualizar profissional
-    static async update(req, res, next) {
+    static async atualizar(req, res, next) {
         try {
             const { id } = req.params;
             const profissional = await ProfissionalModel.update(id, req.body);
@@ -75,7 +75,7 @@ class ProfissionalController {
     }
 
     // Excluir profissional (exclusão lógica)
-    static async delete(req, res, next) {
+    static async deletar(req, res, next) {
         try {
             const { id } = req.params;
             const result = await ProfissionalModel.delete(id);

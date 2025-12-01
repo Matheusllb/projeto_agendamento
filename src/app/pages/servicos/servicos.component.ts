@@ -19,7 +19,7 @@ import { finalize } from 'rxjs/operators';
   template: `
     <div class="page-header">
       <h2>Serviços</h2>
-      <button class="btn btn-primary" (click)="openForm()">
+      <button class="btn btn-primary" (click)="abrirFormulario()">
         <lucide-icon [img]="Adicionar" class="w-4 h-4 mr-2"></lucide-icon> Novo Serviço
       </button>
     </div>
@@ -52,10 +52,10 @@ import { finalize } from 'rxjs/operators';
         </div>
         
         <div class="flex justify-end gap-2 mt-auto pt-4 border-t border-gray-100">
-          <button class="btn-icon" (click)="editService(service)">
+          <button class="btn-icon" (click)="editarServico(service)">
             <lucide-icon [img]="Editar" size="18"></lucide-icon>
           </button>
-          <button class="btn-icon danger" (click)="deleteService(service.idServicos!)">
+          <button class="btn-icon danger" (click)="deletarServico(service.idServicos!)">
             <lucide-icon [img]="Remover" size="18"></lucide-icon>
           </button>
         </div>
@@ -65,7 +65,7 @@ import { finalize } from 'rxjs/operators';
     <!-- Formulário -->
     <div class="max-w-2xl mx-auto card" *ngIf="showForm">
       <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Serviço</h3>
-      <form [formGroup]="serviceForm" (ngSubmit)="saveService()" class="space-y-4">
+      <form [formGroup]="serviceForm" (ngSubmit)="salvarServico()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome do Serviço</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -88,7 +88,7 @@ import { finalize } from 'rxjs/operators';
         </div>
         
         <div class="flex justify-end gap-3 mt-6">
-          <button type="button" class="btn btn-secondary" (click)="cancelForm()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
           <button type="submit" class="btn btn-primary" [disabled]="serviceForm.invalid || saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
@@ -130,17 +130,25 @@ export class ServicosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadServices();
+    this.carregarServicos();
   }
 
-  loadServices() {
+  carregarServicos() {
     this.loading$.next(true);
-    this.services$ = this.servicoService.getAll().pipe(
+    this.servicoService.getAll().pipe(
       finalize(() => this.loading$.next(false))
-    );
+    ).subscribe({
+      next: (data) => {
+        this.services$ = new BehaviorSubject(data).asObservable();
+      },
+      error: (error) => {
+        console.error('Erro ao carregar serviços:', error);
+        this.errorMessage = 'Erro ao carregar serviços';
+      }
+    });
   }
 
-  openForm() {
+  abrirFormulario() {
     this.showForm = true;
     this.isEditing = false;
     this.serviceForm.reset({
@@ -152,20 +160,20 @@ export class ServicosComponent implements OnInit {
     });
   }
 
-  editService(service: Servico) {
+  editarServico(service: Servico) {
     this.showForm = true;
     this.isEditing = true;
     this.editingId = service.idServicos!;
     this.serviceForm.patchValue(service);
   }
 
-  cancelForm() {
+  cancelarFormulario() {
     this.showForm = false;
     this.editingId = null;
     this.errorMessage = '';
   }
 
-  saveService() {
+  salvarServico() {
     if (this.serviceForm.valid) {
       this.saving = true;
       this.errorMessage = '';
@@ -178,8 +186,8 @@ export class ServicosComponent implements OnInit {
       operation.subscribe({
         next: () => {
           this.saving = false;
-          this.cancelForm();
-          this.loadServices();
+          this.cancelarFormulario();
+          this.carregarServicos();
         },
         error: (error) => {
           this.saving = false;
@@ -189,11 +197,11 @@ export class ServicosComponent implements OnInit {
     }
   }
 
-  deleteService(id: number) {
+  deletarServico(id: number) {
     if (confirm('Tem certeza que deseja desativar este serviço?')) {
       this.servicoService.delete(id).subscribe({
         next: () => {
-          this.loadServices();
+          this.carregarServicos();
         },
         error: (error) => {
           this.errorMessage = error.message || 'Erro ao excluir serviço';

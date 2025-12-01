@@ -1,7 +1,7 @@
 const ServicoModel = require('../models/servico.model');
 
 class ServicoController {
-    static async getAll(req, res, next) {
+    static async buscarTodos(req, res, next) {
         try {
             const servicos = await ServicoModel.getAll();
             res.json({ success: true, data: servicos, count: servicos.length });
@@ -10,7 +10,7 @@ class ServicoController {
         }
     }
 
-    static async getById(req, res, next) {
+    static async buscarPorId(req, res, next) {
         try {
             const servico = await ServicoModel.getById(req.params.id);
             if (!servico) {
@@ -22,7 +22,7 @@ class ServicoController {
         }
     }
 
-    static async create(req, res, next) {
+    static async criar(req, res, next) {
         try {
             const servico = await ServicoModel.create(req.body);
             res.status(201).json({ success: true, message: 'Serviço criado com sucesso', data: servico });
@@ -31,7 +31,7 @@ class ServicoController {
         }
     }
 
-    static async update(req, res, next) {
+    static async atualizar(req, res, next) {
         try {
             const servico = await ServicoModel.update(req.params.id, req.body);
             if (!servico) {
@@ -43,7 +43,7 @@ class ServicoController {
         }
     }
 
-    static async delete(req, res, next) {
+    static async deletar(req, res, next) {
         try {
             const result = await ServicoModel.delete(req.params.id);
             res.json(result);

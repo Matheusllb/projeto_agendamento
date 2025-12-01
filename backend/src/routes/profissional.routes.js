@@ -25,10 +25,10 @@ const profissionalValidation = [
 ];
 
 // Routes
-router.get('/', ProfissionalController.getAll);
-router.get('/:id', ProfissionalController.getById);
-router.post('/', profissionalValidation, validate, ProfissionalController.create);
-router.put('/:id', profissionalValidation, validate, ProfissionalController.update);
-router.delete('/:id', ProfissionalController.delete);
+router.get('/', ProfissionalController.buscarTodos);
+router.get('/:id', ProfissionalController.buscarPorId);
+router.post('/', profissionalValidation, validate, ProfissionalController.criar);
+router.put('/:id', profissionalValidation, validate, ProfissionalController.atualizar);
+router.delete('/:id', ProfissionalController.deletar);
 
 module.exports = router;

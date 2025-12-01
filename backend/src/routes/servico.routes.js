@@ -18,10 +18,10 @@ const servicoValidation = [
     body('duracao').isInt({ min: 1 }).withMessage('Duração deve ser maior que 0'),
 ];
 
-router.get('/', ServicoController.getAll);
-router.get('/:id', ServicoController.getById);
-router.post('/', servicoValidation, validate, ServicoController.create);
-router.put('/:id', servicoValidation, validate, ServicoController.update);
-router.delete('/:id', ServicoController.delete);
+router.get('/', ServicoController.buscarTodos);
+router.get('/:id', ServicoController.buscarPorId);
+router.post('/', servicoValidation, validate, ServicoController.criar);
+router.put('/:id', servicoValidation, validate, ServicoController.atualizar);
+router.delete('/:id', ServicoController.deletar);
 
 module.exports = router;
