@@ -3,7 +3,7 @@
 Esta pasta contém os componentes de "Tela Cheia". Cada subpasta aqui geralmente corresponde a uma rota na URL.
 
 ## Estrutura
-Cada pasta (ex: `clients`, `dashboard`) contém:
+Cada pasta (ex: `clientes`, `dashboard`) contém:
 - O componente da página (`.ts`).
 - O template HTML (se separado).
 - Estilos CSS específicos (se houver).

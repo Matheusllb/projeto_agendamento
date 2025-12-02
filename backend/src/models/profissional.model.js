@@ -2,7 +2,7 @@ const db = require('../config/database');
 
 class ProfissionalModel {
     // Buscar todos os profissionais
-    static async getAll() {
+    static async buscarTodos() {
         const [rows] = await db.query(
             'SELECT * FROM PROFISSIONAL WHERE ATIVO = 1 ORDER BY NOME'
         );
@@ -10,7 +10,7 @@ class ProfissionalModel {
     }
 
     // Buscar profissional por ID
-    static async getById(id) {
+    static async buscarPorId(id) {
         const [rows] = await db.query(
             'SELECT * FROM PROFISSIONAL WHERE IDPROF = ?',
             [id]
@@ -19,7 +19,7 @@ class ProfissionalModel {
     }
 
     // Criar novo profissional
-    static async create(data) {
+    static async criar(data) {
         const { nome, telefone, horaEntrada, almoco, horaSaida, diasDaSemana, especialidades, foto, avaliacao } = data;
 
         const [result] = await db.query(
@@ -39,11 +39,11 @@ class ProfissionalModel {
             ]
         );
 
-        return this.getById(result.insertId);
+        return this.buscarPorId(result.insertId);
     }
 
-    // Atualizar profissional
-    static async update(id, data) {
+    // Alterar profissional
+    static async alterar(id, data) {
         const { nome, telefone, ativo, horaEntrada, almoco, horaSaida, diasDaSemana, especialidades, foto, avaliacao } = data;
 
         await db.query(
@@ -67,11 +67,11 @@ class ProfissionalModel {
             ]
         );
 
-        return this.getById(id);
+        return this.buscarPorId(id);
     }
 
     // Exclusão lógica (define ATIVO = 0)
-    static async delete(id) {
+    static async excluir(id) {
         await db.query(
             'UPDATE PROFISSIONAL SET ATIVO = 0 WHERE IDPROF = ?',
             [id]

@@ -24,24 +24,26 @@ import { finalize } from 'rxjs/operators';
       </button>
     </div>
 
+    <!-- Busca -->
+    <div class="mb-6 relative" *ngIf="!exibirFormulario">
+      <lucide-icon [img]="Buscar" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+      <input type="text" placeholder="Buscar por nome, telefone ou email..." class="form-control pl-10">
+    </div>
+
     <!-- Carregamento -->
-    <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
+    <div *ngIf="carregando$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
     <!-- Erro -->
-    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-      {{ errorMessage }}
+    <div *ngIf="mensagemDeErro" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      {{ mensagemDeErro }}
     </div>
 
-    <!-- Busca -->
-    <div class="mb-6 relative" *ngIf="!showForm">
-      <lucide-icon [img]="Buscar" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
-      <input type="text" placeholder="Buscar por nome, telefone ou email..." class="form-control pl-10">
-    </div>
+    
 
     <!-- Lista (Tabela) -->
-    <div class="card overflow-hidden p-0" *ngIf="!showForm && !(loading$ | async)">
+    <div class="card overflow-hidden p-0" *ngIf="!exibirFormulario && !(carregando$ | async)">
       <div class="overflow-x-auto">
         <table class="data-table w-full">
           <thead>
@@ -53,25 +55,25 @@ import { finalize } from 'rxjs/operators';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let client of clients$ | async" class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
-              <td class="p-4 font-medium text-gray-800">{{ client.nome }}</td>
-              <td class="p-4 text-gray-600">{{ client.telefone }}</td>
-              <td class="p-4 text-gray-600">{{ client.email || '-' }}</td>
+            <tr *ngFor="let cliente of clientes$ | async" class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              <td class="p-4 font-medium text-gray-800">{{ cliente.nome }}</td>
+              <td class="p-4 text-gray-600">{{ cliente.telefone }}</td>
+              <td class="p-4 text-gray-600">{{ cliente.email || '-' }}</td>
               <td class="p-4 text-right">
                 <div class="flex justify-end gap-2">
                   <button class="btn-icon" title="Histórico">
                     <lucide-icon [img]="Historico" size="18"></lucide-icon>
                   </button>
-                  <button class="btn-icon" (click)="editarCliente(client)">
+                  <button class="btn-icon" (click)="editarCliente(cliente)">
                     <lucide-icon [img]="Editar" size="18"></lucide-icon>
                   </button>
-                  <button class="btn-icon danger" (click)="deletarCliente(client.idCliente!)">
+                  <button class="btn-icon danger" (click)="deletarCliente(cliente.idCliente!)">
                     <lucide-icon [img]="Remover" size="18"></lucide-icon>
                   </button>
                 </div>
               </td>
             </tr>
-            <tr *ngIf="(clients$ | async)?.length === 0">
+            <tr *ngIf="(clientes$ | async)?.length === 0">
               <td colspan="4" class="p-8 text-center text-gray-500">Nenhum cliente cadastrado.</td>
             </tr>
           </tbody>
@@ -80,9 +82,9 @@ import { finalize } from 'rxjs/operators';
     </div>
 
     <!-- Formulário -->
-    <div class="max-w-2xl mx-auto card" *ngIf="showForm">
-      <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Cliente</h3>
-      <form [formGroup]="clientForm" (ngSubmit)="salvarCliente()" class="space-y-4">
+    <div class="max-w-2xl mx-auto card" *ngIf="exibirFormulario">
+      <h3 class="text-xl font-bold mb-6">{{ estaEditando ? 'Editar' : 'Novo' }} Cliente</h3>
+      <form [formGroup]="clienteForm" (ngSubmit)="salvarCliente()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome Completo</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -106,8 +108,8 @@ import { finalize } from 'rxjs/operators';
 
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="clientForm.invalid || saving">
-            {{ saving ? 'Salvando...' : 'Salvar' }}
+          <button type="submit" class="btn btn-primary" [disabled]="clienteForm.invalid || salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
       </form>
@@ -124,19 +126,19 @@ export class ClientesComponent implements OnInit {
   readonly Buscar = Search;
   readonly Historico = History;
 
-  clients$!: Observable<readonly Cliente[]>;
-  loading$ = new BehaviorSubject<boolean>(false);
+  clientes$!: Observable<readonly Cliente[]>;
+  carregando$ = new BehaviorSubject<boolean>(false);
 
-  showForm = false;
-  isEditing = false;
-  editingId: number | null = null;
-  errorMessage = '';
-  saving = false;
+  exibirFormulario = false;
+  estaEditando = false;
+  editandoId: number | null = null;
+  mensagemDeErro = '';
+  salvando = false;
 
-  clientForm: FormGroup;
+  clienteForm: FormGroup;
 
   constructor() {
-    this.clientForm = this.fb.group({
+    this.clienteForm = this.fb.group({
       nome: ['', Validators.required],
       telefone: ['', Validators.required],
       email: ['', [Validators.email]],
@@ -149,58 +151,58 @@ export class ClientesComponent implements OnInit {
   }
 
   carregarClientes() {
-    this.loading$.next(true);
-    this.clienteService.getAll().pipe(
-      finalize(() => this.loading$.next(false))
+    this.carregando$.next(true);
+    this.clienteService.buscarTodos().pipe(
+      finalize(() => this.carregando$.next(false))
     ).subscribe({
       next: (data) => {
-        this.clients$ = new BehaviorSubject(data).asObservable();
+        this.clientes$ = new BehaviorSubject(data).asObservable();
       },
       error: (error) => {
         console.error('Erro ao carregar clientes:', error);
-        this.errorMessage = 'Erro ao carregar clientes';
+        this.mensagemDeErro = 'Erro ao carregar clientes';
       }
     });
   }
 
   abrirFormulario() {
-    this.showForm = true;
-    this.isEditing = false;
-    this.clientForm.reset();
+    this.exibirFormulario = true;
+    this.estaEditando = false;
+    this.clienteForm.reset();
   }
 
-  editarCliente(client: Cliente) {
-    this.showForm = true;
-    this.isEditing = true;
-    this.editingId = client.idCliente!;
-    this.clientForm.patchValue(client);
+  editarCliente(cliente: Cliente) {
+    this.exibirFormulario = true;
+    this.estaEditando = true;
+    this.editandoId = cliente.idCliente!;
+    this.clienteForm.patchValue(cliente);
   }
 
   cancelarFormulario() {
-    this.showForm = false;
-    this.editingId = null;
-    this.errorMessage = '';
+    this.exibirFormulario = false;
+    this.editandoId = null;
+    this.mensagemDeErro = '';
   }
 
   salvarCliente() {
-    if (this.clientForm.valid) {
-      this.saving = true;
-      this.errorMessage = '';
-      const cliente: Cliente = this.clientForm.value;
+    if (this.clienteForm.valid) {
+      this.salvando = true;
+      this.mensagemDeErro = '';
+      const cliente: Cliente = this.clienteForm.value;
 
-      const operation = this.isEditing && this.editingId
-        ? this.clienteService.update(this.editingId, cliente)
-        : this.clienteService.create(cliente);
+      const operation = this.estaEditando && this.editandoId
+        ? this.clienteService.alterar(this.editandoId, cliente)
+        : this.clienteService.criar(cliente);
 
       operation.subscribe({
         next: () => {
-          this.saving = false;
+          this.salvando = false;
           this.cancelarFormulario();
           this.carregarClientes();
         },
         error: (error) => {
-          this.saving = false;
-          this.errorMessage = error.message || 'Erro ao salvar cliente';
+          this.salvando = false;
+          this.mensagemDeErro = error.message || 'Erro ao salvar cliente';
         }
       });
     }
@@ -208,12 +210,12 @@ export class ClientesComponent implements OnInit {
 
   deletarCliente(id: number) {
     if (confirm('Tem certeza que deseja excluir este cliente?')) {
-      this.clienteService.delete(id).subscribe({
+      this.clienteService.excluir(id).subscribe({
         next: () => {
           this.carregarClientes();
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Erro ao excluir cliente';
+          this.mensagemDeErro = error.message || 'Erro ao excluir cliente';
         }
       });
     }

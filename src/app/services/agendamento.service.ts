@@ -16,13 +16,13 @@ export class AgendamentoService {
     private apiService = inject(ApiService);
     private readonly endpoint = 'agendamentos';
 
-    getAll(filters?: any): Observable<readonly Agendamento[]> {
+    buscarTodos(filters?: any): Observable<readonly Agendamento[]> {
         let url = this.endpoint;
         if (filters) {
             const params = new URLSearchParams(filters).toString();
             url += `?${params}`;
         }
-        return this.apiService.getWithResponse<Agendamento[]>(url).pipe(
+        return this.apiService.buscaComResposta<Agendamento[]>(url).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar agendamentos:', error);
@@ -31,37 +31,37 @@ export class AgendamentoService {
         );
     }
 
-    getById(id: number): Observable<Agendamento> {
+    buscarPorId(id: number): Observable<Agendamento> {
         return this.apiService.get<Agendamento>(`${this.endpoint}/${id}`);
     }
 
-    getByProfessional(idProfissional: number): Observable<readonly Agendamento[]> {
-        return this.apiService.getWithResponse<Agendamento[]>(`${this.endpoint}/professional/${idProfissional}`).pipe(
+    buscarPorProfissional(idProfissional: number): Observable<readonly Agendamento[]> {
+        return this.apiService.buscaComResposta<Agendamento[]>(`${this.endpoint}/professional/${idProfissional}`).pipe(
             map(response => response.data || []),
             catchError(() => of([]))
         );
     }
 
-    getByClient(idCliente: number): Observable<readonly Agendamento[]> {
-        return this.apiService.getWithResponse<Agendamento[]>(`${this.endpoint}/client/${idCliente}`).pipe(
+    buscarPorCliente(idCliente: number): Observable<readonly Agendamento[]> {
+        return this.apiService.buscaComResposta<Agendamento[]>(`${this.endpoint}/cliente/${idCliente}`).pipe(
             map(response => response.data || []),
             catchError(() => of([]))
         );
     }
 
-    create(agendamento: Agendamento): Observable<Agendamento> {
+    criar(agendamento: Agendamento): Observable<Agendamento> {
         return this.apiService.post<Agendamento>(this.endpoint, agendamento);
     }
 
-    update(id: number, agendamento: Agendamento): Observable<Agendamento> {
+    alterar(id: number, agendamento: Agendamento): Observable<Agendamento> {
         return this.apiService.put<Agendamento>(`${this.endpoint}/${id}`, agendamento);
     }
 
-    updateStatus(id: number, idStatus: number): Observable<Agendamento> {
+    atualizarStatus(id: number, idStatus: number): Observable<Agendamento> {
         return this.apiService.patch<Agendamento>(`${this.endpoint}/${id}/status`, { idStatus });
     }
 
-    delete(id: number): Observable<any> {
-        return this.apiService.delete(`${this.endpoint}/${id}`);
+    excluir(id: number): Observable<any> {
+        return this.apiService.excluir(`${this.endpoint}/${id}`);
     }
 }

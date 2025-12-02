@@ -1,14 +1,14 @@
 /**
  * Este componente gerencia a tela de Produtos.
  * Ele permite controlar o estoque, preços e cadastro de produtos,
- * delegando a lógica de dados para o ProductService.
+ * delegando a lógica de dados para o ProdutoService.
  */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ProductService } from '../../services/product.service';
-import { Product } from '../../models/product.model';
-import { LucideAngularModule, Plus, Trash2, Edit, AlertTriangle, Package } from 'lucide-angular';
+import { ProdutoService } from '../../services/produto.service';
+import { Produto } from '../../models/product.model';
+import { LucideAngularModule, Plus, Trash2, Edit, AlertTriangle, Package, Search } from 'lucide-angular';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -24,18 +24,24 @@ import { finalize } from 'rxjs/operators';
       </button>
     </div>
 
+    <!-- Busca -->
+    <div class="mb-6 relative" *ngIf="!exibirFormulario">
+        <lucide-icon [img]="Buscar" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <input type="text" placeholder="Buscar por nome, descrição, valor, quantidade ou categoria..." class="form-control pl-10">
+    </div>  
+
     <!-- Carregando -->
-    <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
+    <div *ngIf="carregando$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
     <!-- Erro -->
-    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-      {{ errorMessage }}
+    <div *ngIf="mensagemDeErro" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      {{ mensagemDeErro }}
     </div>
 
     <!-- Lista (Tabela) -->
-    <div class="card overflow-hidden p-0" *ngIf="!showForm && !(loading$ | async)">
+    <div class="card overflow-hidden p-0" *ngIf="!exibirFormulario && !(carregando$ | async)">
       <div class="overflow-x-auto">
         <table class="data-table w-full">
           <thead>
@@ -94,8 +100,8 @@ import { finalize } from 'rxjs/operators';
     </div>
 
     <!-- Formulário -->
-    <div class="max-w-2xl mx-auto card" *ngIf="showForm">
-      <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Produto</h3>
+    <div class="max-w-2xl mx-auto card" *ngIf="exibirFormulario">
+      <h3 class="text-xl font-bold mb-6">{{ estaEditando ? 'Editar' : 'Novo' }} Produto</h3>
       <form [formGroup]="productForm" (ngSubmit)="salvarProduto()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome do Produto</label>
@@ -142,8 +148,8 @@ import { finalize } from 'rxjs/operators';
         
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || saving">
-            {{ saving ? 'Salvando...' : 'Salvar' }}
+          <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
       </form>
@@ -152,22 +158,23 @@ import { finalize } from 'rxjs/operators';
 })
 export class ProdutosComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private productService = inject(ProductService);
+  private productService = inject(ProdutoService);
 
   readonly Adicionar = Plus;
   readonly Remover = Trash2;
   readonly Editar = Edit;
   readonly Alerta = AlertTriangle;
   readonly Pacote = Package;
+  readonly Buscar = Search;
 
-  products$!: Observable<readonly Product[]>;
-  loading$ = new BehaviorSubject<boolean>(false);
+  products$!: Observable<readonly Produto[]>;
+  carregando$ = new BehaviorSubject<boolean>(false);
 
-  showForm = false;
-  isEditing = false;
-  editingId: number | null = null;
-  errorMessage = '';
-  saving = false;
+  exibirFormulario = false;
+  estaEditando = false;
+  editandoId: number | null = null;
+  mensagemDeErro = '';
+  salvando = false;
 
   productForm: FormGroup;
 
@@ -190,23 +197,23 @@ export class ProdutosComponent implements OnInit {
   }
 
   carregarProdutos() {
-    this.loading$.next(true);
-    this.productService.getAll().pipe(
-      finalize(() => this.loading$.next(false))
+    this.carregando$.next(true);
+    this.productService.buscarTodos().pipe(
+      finalize(() => this.carregando$.next(false))
     ).subscribe({
       next: (data) => {
         this.products$ = new BehaviorSubject(data).asObservable();
       },
       error: (error) => {
         console.error('Erro ao carregar produtos:', error);
-        this.errorMessage = 'Erro ao carregar produtos';
+        this.mensagemDeErro = 'Erro ao carregar produtos';
       }
     });
   }
 
   abrirFormulario() {
-    this.showForm = true;
-    this.isEditing = false;
+    this.exibirFormulario = true;
+    this.estaEditando = false;
     this.productForm.reset({
       estoqueQuantidade: 0,
       estoqueMinimo: 5,
@@ -217,38 +224,38 @@ export class ProdutosComponent implements OnInit {
     });
   }
 
-  editarProduto(product: Product) {
-    this.showForm = true;
-    this.isEditing = true;
-    this.editingId = product.idProduto!;
+  editarProduto(product: Produto) {
+    this.exibirFormulario = true;
+    this.estaEditando = true;
+    this.editandoId = product.idProduto!;
     this.productForm.patchValue(product);
   }
 
   cancelarFormulario() {
-    this.showForm = false;
-    this.editingId = null;
-    this.errorMessage = '';
+    this.exibirFormulario = false;
+    this.editandoId = null;
+    this.mensagemDeErro = '';
   }
 
   salvarProduto() {
     if (this.productForm.valid) {
-      this.saving = true;
-      this.errorMessage = '';
-      const product: Product = this.productForm.value;
+      this.salvando = true;
+      this.mensagemDeErro = '';
+      const product: Produto = this.productForm.value;
 
-      const operation = this.isEditing && this.editingId
-        ? this.productService.update(this.editingId, product)
-        : this.productService.create(product);
+      const operation = this.estaEditando && this.editandoId
+        ? this.productService.alterar(this.editandoId, product)
+        : this.productService.criar(product);
 
       operation.subscribe({
         next: () => {
-          this.saving = false;
+          this.salvando = false;
           this.cancelarFormulario();
           this.carregarProdutos();
         },
         error: (error) => {
-          this.saving = false;
-          this.errorMessage = error.message || 'Erro ao salvar produto';
+          this.salvando = false;
+          this.mensagemDeErro = error.message || 'Erro ao salvar produto';
         }
       });
     }
@@ -256,12 +263,12 @@ export class ProdutosComponent implements OnInit {
 
   deletarProduto(id: number) {
     if (confirm('Tem certeza que deseja excluir este produto?')) {
-      this.productService.delete(id).subscribe({
+      this.productService.excluir(id).subscribe({
         next: () => {
           this.carregarProdutos();
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Erro ao excluir produto';
+          this.mensagemDeErro = error.message || 'Erro ao excluir produto';
         }
       });
     }

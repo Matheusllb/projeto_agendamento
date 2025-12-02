@@ -4,31 +4,31 @@
  */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Product } from '../models/product.model';
+import { Produto } from '../models/product.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ProductService {
+export class ProdutoService {
     // Placeholder for future implementation
 
-    getAll(): Observable<readonly Product[]> {
+    buscarTodos(): Observable<readonly Produto[]> {
         return of([]);
     }
 
-    getById(id: number): Observable<Product | undefined> {
+    buscarPorId(id: number): Observable<Produto | undefined> {
         return of(undefined);
     }
 
-    create(product: Product): Observable<Product> {
+    criar(product: Produto): Observable<Produto> {
         return of(product);
     }
 
-    update(id: number, product: Product): Observable<Product> {
+    alterar(id: number, product: Produto): Observable<Produto> {
         return of(product);
     }
 
-    delete(id: number): Observable<any> {
+    excluir(id: number): Observable<any> {
         return of({ success: true });
     }
 }

@@ -40,11 +40,11 @@ O servidor ficará disponível em `http://localhost:3000`
 # Endpoints (Endpoints são métodos de comunicação HTTP)
 
 # Profissionais
-- `GET /api/professionals` - Lista todos
-- `GET /api/professionals/:id` - Busca por ID
-- `POST /api/professionals` - Cria novo
-- `PUT /api/professionals/:id` - Atualiza
-- `DELETE /api/professionals/:id` - Desativa (soft delete)
+- `GET /api/professionais` - Lista todos
+- `GET /api/professionais/:id` - Busca por ID
+- `POST /api/professionais` - Cria novo
+- `PUT /api/professionais/:id` - Atualiza
+- `DELETE /api/professionais/:id` - Desativa (soft excluir)
 
 # Serviços
 - `GET /api/services` - Lista todos
@@ -54,17 +54,17 @@ O servidor ficará disponível em `http://localhost:3000`
 - `DELETE /api/services/:id` - Desativa
 
 # Clientes
-- `GET /api/clients` - Lista todos
-- `GET /api/clients/:id` - Busca por ID
-- `POST /api/clients` - Cria novo
-- `PUT /api/clients/:id` - Atualiza
-- `DELETE /api/clients/:id` - Exclui
+- `GET /api/clientes` - Lista todos
+- `GET /api/clientes/:id` - Busca por ID
+- `POST /api/clientes` - Cria novo
+- `PUT /api/clientes/:id` - Atualiza
+- `DELETE /api/clientes/:id` - Exclui
 
 # Agendamentos
 - `GET /api/appointments` - Lista todos (com filtros opcionais)
 - `GET /api/appointments/:id` - Busca por ID
 - `GET /api/appointments/professional/:id` - Por profissional
-- `GET /api/appointments/client/:id` - Por cliente
+- `GET /api/appointments/cliente/:id` - Por cliente
 - `POST /api/appointments` - Cria novo
 - `PUT /api/appointments/:id` - Atualiza
 - `PATCH /api/appointments/:id/status` - Atualiza status
@@ -89,8 +89,8 @@ Invoke-RestMethod -Uri "http://localhost:3000/api/clientes" -Method Get
 Invoke-RestMethod -Uri "http://localhost:3000/api/clientes" -Method Post -ContentType "application/json" -Body '{"nome":"João Teste","telefone":"11999999999","email":"joao@teste.com"}'
 ```
 
-### Atualizar (PUT)
-*Substitua `1` pelo ID do cliente que deseja atualizar.*
+### Alterar (PUT)
+*Substitua `1` pelo ID do cliente que deseja alterar.*
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:3000/api/clientes/1" -Method Put -ContentType "application/json" -Body '{"nome":"João Atualizado","telefone":"11888888888"}'
 ```
@@ -126,7 +126,7 @@ $body = @{
 Invoke-RestMethod -Uri "http://localhost:3000/api/profissionais" -Method Post -ContentType "application/json" -Body $body
 ```
 
-### Atualizar (PUT)
+### Alterar (PUT)
 ```powershell
 $body = @{ nome = "Dra. Ana Silva"; avaliacao = 4.8 } | ConvertTo-Json
 Invoke-RestMethod -Uri "http://localhost:3000/api/profissionais/1" -Method Put -ContentType "application/json" -Body $body
@@ -161,7 +161,7 @@ $body = @{
 Invoke-RestMethod -Uri "http://localhost:3000/api/servicos" -Method Post -ContentType "application/json" -Body $body
 ```
 
-### Atualizar (PUT)
+### Alterar (PUT)
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:3000/api/servicos/1" -Method Put -ContentType "application/json" -Body '{"preco": 60.00}'
 ```
@@ -195,7 +195,7 @@ $body = @{
 Invoke-RestMethod -Uri "http://localhost:3000/api/agendamentos" -Method Post -ContentType "application/json" -Body $body
 ```
 
-### Atualizar Status (PUT/PATCH)
+### Alterar Status (PUT/PATCH)
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:3000/api/agendamentos/1" -Method Put -ContentType "application/json" -Body '{"status": "CONFIRMADO"}'
 ```

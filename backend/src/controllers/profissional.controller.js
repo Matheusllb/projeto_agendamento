@@ -4,7 +4,7 @@ class ProfissionalController {
     // Buscar todos os profissionais
     static async buscarTodos(req, res, next) {
         try {
-            const profissionais = await ProfissionalModel.getAll();
+            const profissionais = await ProfissionalModel.buscarTodos();
             res.json({
                 success: true,
                 data: profissionais,
@@ -19,7 +19,7 @@ class ProfissionalController {
     static async buscarPorId(req, res, next) {
         try {
             const { id } = req.params;
-            const profissional = await ProfissionalModel.getById(id);
+            const profissional = await ProfissionalModel.buscarPorId(id);
 
             if (!profissional) {
                 return res.status(404).json({
@@ -40,7 +40,7 @@ class ProfissionalController {
     // Criar novo profissional
     static async criar(req, res, next) {
         try {
-            const profissional = await ProfissionalModel.create(req.body);
+            const profissional = await ProfissionalModel.criar(req.body);
             res.status(201).json({
                 success: true,
                 message: 'Profissional criado com sucesso',
@@ -51,11 +51,11 @@ class ProfissionalController {
         }
     }
 
-    // Atualizar profissional
-    static async atualizar(req, res, next) {
+    // Alterar profissional
+    static async alterar(req, res, next) {
         try {
             const { id } = req.params;
-            const profissional = await ProfissionalModel.update(id, req.body);
+            const profissional = await ProfissionalModel.alterar(id, req.body);
 
             if (!profissional) {
                 return res.status(404).json({
@@ -78,7 +78,7 @@ class ProfissionalController {
     static async deletar(req, res, next) {
         try {
             const { id } = req.params;
-            const result = await ProfissionalModel.delete(id);
+            const result = await ProfissionalModel.excluir(id);
             res.json(result);
         } catch (error) {
             next(error);

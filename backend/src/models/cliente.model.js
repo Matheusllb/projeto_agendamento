@@ -1,20 +1,20 @@
 const db = require('../config/database');
 
 class ClienteModel {
-    static async getAll() {
+    static async buscarTodos() {
         // Executa a query SQL
         const [rows] = await db.query('SELECT * FROM CLIENTE ORDER BY NOME');
         // Formata cada linha do resultado
         return rows.map(this.formatCliente);
     }
 
-    static async getById(id) {
+    static async buscarPorId(id) {
         // Executa a query SQL
         const [rows] = await db.query('SELECT * FROM CLIENTE WHERE IDCLIENTE = ?', [id]);
         return rows.length > 0 ? this.formatCliente(rows[0]) : null;
     }
 
-    static async create(data) {
+    static async criar(data) {
         const { nome, telefone, email, observacoes } = data;
 
         const [result] = await db.query(
@@ -22,10 +22,10 @@ class ClienteModel {
             [nome, telefone, email || null, observacoes || null]
         );
 
-        return this.getById(result.insertId);
+        return this.buscarPorId(result.insertId);
     }
 
-    static async update(id, data) {
+    static async alterar(id, data) {
         const { nome, telefone, email, observacoes } = data;
 
         await db.query(
@@ -33,10 +33,10 @@ class ClienteModel {
             [nome, telefone, email || null, observacoes || null, id]
         );
 
-        return this.getById(id);
+        return this.buscarPorId(id);
     }
 
-    static async delete(id) {
+    static async excluir(id) {
         await db.query('DELETE FROM CLIENTE WHERE IDCLIENTE = ?', [id]);
         return { success: true, message: 'Cliente excluído com sucesso' };
     }

@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
 class AgendamentoModel {
-    static async getAll(filters = {}) {
+    static async buscarTodos(filters = {}) {
         let query = `
             SELECT a.*, 
                    p.NOME as profissionalNome, 
@@ -36,7 +36,7 @@ class AgendamentoModel {
         return rows.map(this.formatAgendamento);
     }
 
-    static async getById(id) {
+    static async buscarPorId(id) {
         const [rows] = await db.query(`
             SELECT a.*, 
                    p.NOME as profissionalNome, 
@@ -51,15 +51,15 @@ class AgendamentoModel {
         return rows.length > 0 ? this.formatAgendamento(rows[0]) : null;
     }
 
-    static async getByProfessional(idProfissional) {
-        return this.getAll({ idProfissional });
+    static async buscarPorProfissional(idProfissional) {
+        return this.buscarTodos({ idProfissional });
     }
 
-    static async getByClient(idCliente) {
-        return this.getAll({ idCliente });
+    static async buscarPorCliente(idCliente) {
+        return this.buscarTodos({ idCliente });
     }
 
-    static async create(data) {
+    static async criar(data) {
         const {
             idProfissional, idCliente, idStatus, data: dataAgendamento, horario,
             observacoes, preco, precoVariavel, pago
@@ -82,10 +82,10 @@ class AgendamentoModel {
             pago ? 1 : 0
         ]);
 
-        return this.getById(result.insertId);
+        return this.buscarPorId(result.insertId);
     }
 
-    static async update(id, data) {
+    static async alterar(id, data) {
         const {
             idProfissional, idCliente, idStatus, data: dataAgendamento, horario,
             observacoes, preco, precoVariavel, pago, pausado
@@ -110,15 +110,15 @@ class AgendamentoModel {
             id
         ]);
 
-        return this.getById(id);
+        return this.buscarPorId(id);
     }
 
-    static async updateStatus(id, idStatus) {
+    static async atualizarStatus(id, idStatus) {
         await db.query('UPDATE AGENDAMENTO SET IDSTATUS = ? WHERE IDAGENDAMENTO = ?', [idStatus, id]);
-        return this.getById(id);
+        return this.buscarPorId(id);
     }
 
-    static async delete(id) {
+    static async excluir(id) {
         await db.query('DELETE FROM AGENDAMENTO WHERE IDAGENDAMENTO = ?', [id]);
         return { success: true, message: 'Agendamento cancelado com sucesso' };
     }

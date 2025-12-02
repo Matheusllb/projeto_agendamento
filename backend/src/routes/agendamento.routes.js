@@ -21,9 +21,9 @@ const agendamentoValidation = [
 router.get('/', AgendamentoController.buscarTodos);
 router.get('/:id', AgendamentoController.buscarPorId);
 router.get('/professional/:id', AgendamentoController.buscarPorProfissional);
-router.get('/client/:id', AgendamentoController.buscarPorCliente);
+router.get('/cliente/:id', AgendamentoController.buscarPorCliente);
 router.post('/', agendamentoValidation, validate, AgendamentoController.criar);
-router.put('/:id', agendamentoValidation, validate, AgendamentoController.atualizar);
+router.put('/:id', agendamentoValidation, validate, AgendamentoController.alterar);
 router.patch('/:id/status', AgendamentoController.atualizarStatus);
 router.delete('/:id', AgendamentoController.deletar);
 

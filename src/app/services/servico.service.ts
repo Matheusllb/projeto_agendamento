@@ -15,8 +15,8 @@ export class ServicoService {
     private apiService = inject(ApiService);
     private readonly endpoint = 'servicos';
 
-    getAll(): Observable<readonly Servico[]> {
-        return this.apiService.getWithResponse<Servico[]>(this.endpoint).pipe(
+    buscarTodos(): Observable<readonly Servico[]> {
+        return this.apiService.buscaComResposta<Servico[]>(this.endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar serviços:', error);
@@ -25,19 +25,19 @@ export class ServicoService {
         );
     }
 
-    getById(id: number): Observable<Servico> {
+    buscarPorId(id: number): Observable<Servico> {
         return this.apiService.get<Servico>(`${this.endpoint}/${id}`);
     }
 
-    create(servico: Servico): Observable<Servico> {
+    criar(servico: Servico): Observable<Servico> {
         return this.apiService.post<Servico>(this.endpoint, servico);
     }
 
-    update(id: number, servico: Servico): Observable<Servico> {
+    alterar(id: number, servico: Servico): Observable<Servico> {
         return this.apiService.put<Servico>(`${this.endpoint}/${id}`, servico);
     }
 
-    delete(id: number): Observable<any> {
-        return this.apiService.delete(`${this.endpoint}/${id}`);
+    excluir(id: number): Observable<any> {
+        return this.apiService.excluir(`${this.endpoint}/${id}`);
     }
 }

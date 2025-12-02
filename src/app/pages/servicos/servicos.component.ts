@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ServicoService } from '../../services/servico.service';
 import { Servico } from '../../models/servico.model';
-import { LucideAngularModule, Plus, Trash2, Edit, Clock } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, Edit, Clock, Search } from 'lucide-angular';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -24,18 +24,24 @@ import { finalize } from 'rxjs/operators';
       </button>
     </div>
 
+    <!-- Busca -->
+    <div class="mb-6 relative" *ngIf="!exibirFormulario">
+        <lucide-icon [img]="Buscar" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <input type="text" placeholder="Buscar por nome, descrição ou preço..." class="form-control pl-10">
+    </div>    
+
     <!-- Carregamento -->
-    <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
+    <div *ngIf="carregando$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
     <!-- Erro -->
-    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-      {{ errorMessage }}
+    <div *ngIf="mensagemDeErro" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      {{ mensagemDeErro }}
     </div>
 
     <!-- Lista -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!showForm && !(loading$ | async)">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!exibirFormulario && !(carregando$ | async)">
       <div class="card flex flex-col gap-4" *ngFor="let service of services$ | async">
         <div class="flex justify-between items-start">
           <div>
@@ -63,9 +69,9 @@ import { finalize } from 'rxjs/operators';
     </div>
 
     <!-- Formulário -->
-    <div class="max-w-2xl mx-auto card" *ngIf="showForm">
-      <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Serviço</h3>
-      <form [formGroup]="serviceForm" (ngSubmit)="salvarServico()" class="space-y-4">
+    <div class="max-w-2xl mx-auto card" *ngIf="exibirFormulario">
+      <h3 class="text-xl font-bold mb-6">{{ estaEditando ? 'Editar' : 'Novo' }} Serviço</h3>
+      <form [formGroup]="servicoForm" (ngSubmit)="salvarServico()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome do Serviço</label>
           <input type="text" formControlName="nome" class="form-control">
@@ -89,8 +95,8 @@ import { finalize } from 'rxjs/operators';
         
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="serviceForm.invalid || saving">
-            {{ saving ? 'Salvando...' : 'Salvar' }}
+          <button type="submit" class="btn btn-primary" [disabled]="servicoForm.invalid || salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
       </form>
@@ -105,20 +111,21 @@ export class ServicosComponent implements OnInit {
   readonly Remover = Trash2;
   readonly Editar = Edit;
   readonly Duracao = Clock;
+  readonly Buscar = Search;
 
   services$!: Observable<readonly Servico[]>;
-  loading$ = new BehaviorSubject<boolean>(false);
+  carregando$ = new BehaviorSubject<boolean>(false);
 
-  showForm = false;
-  isEditing = false;
-  editingId: number | null = null;
-  errorMessage = '';
-  saving = false;
+  exibirFormulario = false;
+  estaEditando = false;
+  editandoId: number | null = null;
+  mensagemDeErro = '';
+  salvando = false;
 
-  serviceForm: FormGroup;
+  servicoForm: FormGroup;
 
   constructor() {
-    this.serviceForm = this.fb.group({
+    this.servicoForm = this.fb.group({
       nome: ['', Validators.required],
       descricao: ['', Validators.required],
       duracao: [30, [Validators.required, Validators.min(5)]],
@@ -134,24 +141,24 @@ export class ServicosComponent implements OnInit {
   }
 
   carregarServicos() {
-    this.loading$.next(true);
-    this.servicoService.getAll().pipe(
-      finalize(() => this.loading$.next(false))
+    this.carregando$.next(true);
+    this.servicoService.buscarTodos().pipe(
+      finalize(() => this.carregando$.next(false))
     ).subscribe({
       next: (data) => {
         this.services$ = new BehaviorSubject(data).asObservable();
       },
       error: (error) => {
         console.error('Erro ao carregar serviços:', error);
-        this.errorMessage = 'Erro ao carregar serviços';
+        this.mensagemDeErro = 'Erro ao carregar serviços';
       }
     });
   }
 
   abrirFormulario() {
-    this.showForm = true;
-    this.isEditing = false;
-    this.serviceForm.reset({
+    this.exibirFormulario = true;
+    this.estaEditando = false;
+    this.servicoForm.reset({
       duracao: 30,
       preco: 0,
       idEstabelecimento: 1,
@@ -161,37 +168,37 @@ export class ServicosComponent implements OnInit {
   }
 
   editarServico(service: Servico) {
-    this.showForm = true;
-    this.isEditing = true;
-    this.editingId = service.idServicos!;
-    this.serviceForm.patchValue(service);
+    this.exibirFormulario = true;
+    this.estaEditando = true;
+    this.editandoId = service.idServicos!;
+    this.servicoForm.patchValue(service);
   }
 
   cancelarFormulario() {
-    this.showForm = false;
-    this.editingId = null;
-    this.errorMessage = '';
+    this.exibirFormulario = false;
+    this.editandoId = null;
+    this.mensagemDeErro = '';
   }
 
   salvarServico() {
-    if (this.serviceForm.valid) {
-      this.saving = true;
-      this.errorMessage = '';
-      const servico: Servico = this.serviceForm.value;
+    if (this.servicoForm.valid) {
+      this.salvando = true;
+      this.mensagemDeErro = '';
+      const servico: Servico = this.servicoForm.value;
 
-      const operation = this.isEditing && this.editingId
-        ? this.servicoService.update(this.editingId, servico)
-        : this.servicoService.create(servico);
+      const operation = this.estaEditando && this.editandoId
+        ? this.servicoService.alterar(this.editandoId, servico)
+        : this.servicoService.criar(servico);
 
       operation.subscribe({
         next: () => {
-          this.saving = false;
+          this.salvando = false;
           this.cancelarFormulario();
           this.carregarServicos();
         },
         error: (error) => {
-          this.saving = false;
-          this.errorMessage = error.message || 'Erro ao salvar serviço';
+          this.salvando = false;
+          this.mensagemDeErro = error.message || 'Erro ao salvar serviço';
         }
       });
     }
@@ -199,12 +206,12 @@ export class ServicosComponent implements OnInit {
 
   deletarServico(id: number) {
     if (confirm('Tem certeza que deseja desativar este serviço?')) {
-      this.servicoService.delete(id).subscribe({
+      this.servicoService.excluir(id).subscribe({
         next: () => {
           this.carregarServicos();
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Erro ao excluir serviço';
+          this.mensagemDeErro = error.message || 'Erro ao excluir serviço';
         }
       });
     }

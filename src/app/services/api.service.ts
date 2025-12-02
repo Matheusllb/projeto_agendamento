@@ -35,7 +35,7 @@ export class ApiService {
     }
 
     // Requisição GET genérica que retorna resposta completa
-    getWithResponse<T>(endpoint: string): Observable<ApiResponse<T>> {
+    buscaComResposta<T>(endpoint: string): Observable<ApiResponse<T>> {
         const url = `${this.baseUrl}/${endpoint}`;
         console.log(`ApiService: Solicitação de GET para ${url}`);
         return this.http.get<ApiResponse<T>>(url)
@@ -77,7 +77,7 @@ export class ApiService {
     }
 
     // Requisição DELETE genérica
-    delete<T>(endpoint: string): Observable<T> {
+    excluir<T>(endpoint: string): Observable<T> {
         return this.http.delete<ApiResponse<T>>(`${this.baseUrl}/${endpoint}`)
             .pipe(
                 timeout(5000),
@@ -88,17 +88,17 @@ export class ApiService {
 
     // Tratamento de erros
     private handleError(error: HttpErrorResponse) {
-        let errorMessage = 'Ocorreu um erro desconhecido';
+        let mensagemDeErro = 'Ocorreu um erro desconhecido';
 
         if (error.error instanceof ErrorEvent) {
             // Erro do lado do cliente
-            errorMessage = `Erro: ${error.error.message}`;
+            mensagemDeErro = `Erro: ${error.error.message}`;
         } else {
             // Erro do lado do servidor
-            errorMessage = error.error?.message || `Erro ${error.status}: ${error.statusText}`;
+            mensagemDeErro = error.error?.message || `Erro ${error.status}: ${error.statusText}`;
         }
 
-        console.error('API Error:', errorMessage);
-        return throwError(() => new Error(errorMessage));
+        console.error('API Error:', mensagemDeErro);
+        return throwError(() => new Error(mensagemDeErro));
     }
 }

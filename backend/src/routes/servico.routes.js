@@ -21,7 +21,7 @@ const servicoValidation = [
 router.get('/', ServicoController.buscarTodos);
 router.get('/:id', ServicoController.buscarPorId);
 router.post('/', servicoValidation, validate, ServicoController.criar);
-router.put('/:id', servicoValidation, validate, ServicoController.atualizar);
+router.put('/:id', servicoValidation, validate, ServicoController.alterar);
 router.delete('/:id', ServicoController.deletar);
 
 module.exports = router;

@@ -6,26 +6,26 @@ import { Profissional } from '../models/profissional.model';
 import { Servico } from '../models/servico.model';
 import { Cliente } from '../models/cliente.model';
 import { Agendamento } from '../models/agendamento.model';
-import { Product } from '../models/product.model';
+import { Produto } from '../models/product.model';
 import { ApiService, ApiResponse } from './api.service';
 
 @Injectable({
     providedIn: 'root'
 })
 /**
- * @deprecated Use specific services (ProfissionalService, ClienteService, etc.) instead.
+ * @deprecated Usa serviços específicos (ProfissionalService, ClienteService, etc.) ao invés disso.
  */
 export class DataService {
     private apiService = inject(ApiService);
 
     // Estados de carregamento
-    loading$ = new BehaviorSubject<boolean>(false);
+    carregando$ = new BehaviorSubject<boolean>(false);
 
     // Profissionais
     getProfessionals(): Observable<Profissional[]> {
-        this.loading$.next(true);
+        this.carregando$.next(true);
         console.log('DataService: Buscando profissionais...');
-        return this.apiService.getWithResponse<Profissional[]>('profissionais').pipe(
+        return this.apiService.buscaComResposta<Profissional[]>('profissionais').pipe(
             tap(response => console.log('DataService: Resposta profissionais:', response)),
             map(response => {
                 const data = response.data || [];
@@ -36,7 +36,7 @@ export class DataService {
                 console.error('Erro ao carregar profissionais:', error);
                 return of([]);
             }),
-            finalize(() => this.loading$.next(false))
+            finalize(() => this.carregando$.next(false))
         );
     }
 
@@ -53,14 +53,14 @@ export class DataService {
     }
 
     deleteProfessional(id: number): Observable<any> {
-        return this.apiService.delete(`profissionais/${id}`);
+        return this.apiService.excluir(`profissionais/${id}`);
     }
 
     // Serviços
     getServices(): Observable<Servico[]> {
-        this.loading$.next(true);
+        this.carregando$.next(true);
         console.log('DataService: Buscando serviços...');
-        return this.apiService.getWithResponse<Servico[]>('servicos').pipe(
+        return this.apiService.buscaComResposta<Servico[]>('servicos').pipe(
             tap(response => console.log('DataService: Resposta serviços:', response)),
             map(response => {
                 const data = response.data || [];
@@ -71,7 +71,7 @@ export class DataService {
                 console.error('Erro ao carregar serviços:', error);
                 return of([]);
             }),
-            finalize(() => this.loading$.next(false))
+            finalize(() => this.carregando$.next(false))
         );
     }
 
@@ -88,14 +88,14 @@ export class DataService {
     }
 
     deleteService(id: number): Observable<any> {
-        return this.apiService.delete(`servicos/${id}`);
+        return this.apiService.excluir(`servicos/${id}`);
     }
 
     // Clientes
     getClients(): Observable<Cliente[]> {
-        this.loading$.next(true);
+        this.carregando$.next(true);
         console.log('DataService: Buscando clientes...');
-        return this.apiService.getWithResponse<Cliente[]>('clientes').pipe(
+        return this.apiService.buscaComResposta<Cliente[]>('clientes').pipe(
             tap(response => console.log('DataService: Resposta clientes:', response)),
             map(response => {
                 const data = response.data || [];
@@ -106,7 +106,7 @@ export class DataService {
                 console.error('Erro ao carregar clientes:', error);
                 return of([]);
             }),
-            finalize(() => this.loading$.next(false))
+            finalize(() => this.carregando$.next(false))
         );
     }
 
@@ -114,33 +114,33 @@ export class DataService {
         return this.apiService.get<Cliente>(`clientes/${id}`);
     }
 
-    addClient(client: Cliente): Observable<Cliente> {
-        return this.apiService.post<Cliente>('clientes', client);
+    addClient(cliente: Cliente): Observable<Cliente> {
+        return this.apiService.post<Cliente>('clientes', cliente);
     }
 
-    updateClient(id: number, client: Cliente): Observable<Cliente> {
-        return this.apiService.put<Cliente>(`clientes/${id}`, client);
+    updateClient(id: number, cliente: Cliente): Observable<Cliente> {
+        return this.apiService.put<Cliente>(`clientes/${id}`, cliente);
     }
 
     deleteClient(id: number): Observable<any> {
-        return this.apiService.delete(`clientes/${id}`);
+        return this.apiService.excluir(`clientes/${id}`);
     }
 
     // Agendamentos
     getAppointments(filters?: any): Observable<Agendamento[]> {
-        this.loading$.next(true);
+        this.carregando$.next(true);
         let endpoint = 'agendamentos';
         if (filters) {
             const params = new URLSearchParams(filters).toString();
             endpoint += `?${params}`;
         }
-        return this.apiService.getWithResponse<Agendamento[]>(endpoint).pipe(
+        return this.apiService.buscaComResposta<Agendamento[]>(endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar agendamentos:', error);
                 return of([]);
             }),
-            finalize(() => this.loading$.next(false))
+            finalize(() => this.carregando$.next(false))
         );
     }
 
@@ -149,14 +149,14 @@ export class DataService {
     }
 
     getAppointmentsByProfessional(idProfissional: number): Observable<Agendamento[]> {
-        return this.apiService.getWithResponse<Agendamento[]>(`agendamentos/professional/${idProfissional}`).pipe(
+        return this.apiService.buscaComResposta<Agendamento[]>(`agendamentos/professional/${idProfissional}`).pipe(
             map(response => response.data || []),
             catchError(() => of([]))
         );
     }
 
     getAppointmentsByClient(idCliente: number): Observable<Agendamento[]> {
-        return this.apiService.getWithResponse<Agendamento[]>(`agendamentos/client/${idCliente}`).pipe(
+        return this.apiService.buscaComResposta<Agendamento[]>(`agendamentos/cliente/${idCliente}`).pipe(
             map(response => response.data || []),
             catchError(() => of([]))
         );
@@ -175,19 +175,19 @@ export class DataService {
     }
 
     deleteAppointment(id: number): Observable<any> {
-        return this.apiService.delete(`agendamentos/${id}`);
+        return this.apiService.excluir(`agendamentos/${id}`);
     }
 
     // Produtos (para uso futuro - ainda não implementado no backend)
-    getProducts(): Observable<Product[]> {
+    getProducts(): Observable<Produto[]> {
         return of([]);
     }
 
-    addProduct(product: Product): Observable<Product> {
+    addProduct(product: Produto): Observable<Produto> {
         return of(product);
     }
 
-    updateProduct(id: number, product: Product): Observable<Product> {
+    updateProduct(id: number, product: Produto): Observable<Produto> {
         return of(product);
     }
 

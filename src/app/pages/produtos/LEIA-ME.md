@@ -8,4 +8,4 @@ Gerencia o inventário de produtos vendidos ou usados no estabelecimento.
 - Categorização.
 
 ## Dependências
-- Usa `ProductService` para dados.
+- Usa `ProdutoService` para dados.

@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProfissionalService } from '../../services/profissional.service';
 import { Profissional } from '../../models/profissional.model';
-import { LucideAngularModule, Plus, Trash2, Edit, Star, User } from 'lucide-angular';
+import { LucideAngularModule, Plus, Trash2, Edit, Star, User, Search } from 'lucide-angular';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -24,19 +24,25 @@ import { finalize } from 'rxjs/operators';
       </button>
     </div>
 
+    <!-- Busca -->
+    <div class="mb-6 relative" *ngIf="!exibirFormulario">
+        <lucide-icon [img]="Buscar" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"></lucide-icon>
+        <input type="text" placeholder="Buscar por nome, telefone ou profissional..." class="form-control pl-10">
+    </div>
+
     <!-- Carregamento -->
-    <div *ngIf="loading$ | async" class="flex justify-center items-center py-12">
+    <div *ngIf="carregando$ | async" class="flex justify-center items-center py-12">
       <div class="text-gray-500">Carregando...</div>
     </div>
 
     <!-- Erro -->
-    <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-      {{ errorMessage }}
+    <div *ngIf="mensagemDeErro" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      {{ mensagemDeErro }}
     </div>
 
     <!-- Lista -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!showForm && !(loading$ | async)">
-      <div class="card flex flex-col gap-4" *ngFor="let prof of professionals$ | async">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" *ngIf="!exibirFormulario && !(carregando$ | async)">
+      <div class="card flex flex-col gap-4" *ngFor="let prof of professionais$ | async">
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-full bg-primary-light text-primary flex items-center justify-center overflow-hidden">
             <img *ngIf="prof.foto" [src]="prof.foto" alt="Avatar" class="w-full h-full object-cover">
@@ -65,8 +71,8 @@ import { finalize } from 'rxjs/operators';
     </div>
 
     <!-- Formulário -->
-    <div class="max-w-2xl mx-auto card" *ngIf="showForm">
-      <h3 class="text-xl font-bold mb-6">{{ isEditing ? 'Editar' : 'Novo' }} Profissional</h3>
+    <div class="max-w-2xl mx-auto card" *ngIf="exibirFormulario">
+      <h3 class="text-xl font-bold mb-6">{{ estaEditando ? 'Editar' : 'Novo' }} Profissional</h3>
       <form [formGroup]="profForm" (ngSubmit)="salvarProfissional()" class="space-y-4">
         <div>
           <label class="block mb-1 font-medium text-gray-600">Nome</label>
@@ -97,8 +103,8 @@ import { finalize } from 'rxjs/operators';
         
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="profForm.invalid || saving">
-            {{ saving ? 'Salvando...' : 'Salvar' }}
+          <button type="submit" class="btn btn-primary" [disabled]="profForm.invalid || salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
           </button>
         </div>
       </form>
@@ -114,15 +120,16 @@ export class ProfissionaisComponent implements OnInit {
   readonly Editar = Edit;
   readonly Avaliacao = Star;
   readonly Usuario = User;
+  readonly Buscar = Search;
 
-  professionals$!: Observable<readonly Profissional[]>;
-  loading$ = new BehaviorSubject<boolean>(false);
+  professionais$!: Observable<readonly Profissional[]>;
+  carregando$ = new BehaviorSubject<boolean>(false);
 
-  showForm = false;
-  isEditing = false;
-  editingId: number | null = null;
-  errorMessage = '';
-  saving = false;
+  exibirFormulario = false;
+  estaEditando = false;
+  editandoId: number | null = null;
+  mensagemDeErro = '';
+  salvando = false;
 
   profForm: FormGroup;
 
@@ -141,27 +148,27 @@ export class ProfissionaisComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.carregarProfissionais();
+    this.buscarTodos();
   }
 
-  carregarProfissionais() {
-    this.loading$.next(true);
-    this.profissionalService.getAll().pipe(
-      finalize(() => this.loading$.next(false))
+  buscarTodos() {
+    this.carregando$.next(true);
+    this.profissionalService.buscarTodos().pipe(
+      finalize(() => this.carregando$.next(false))
     ).subscribe({
       next: (data) => {
-        this.professionals$ = new BehaviorSubject(data).asObservable();
+        this.professionais$ = new BehaviorSubject(data).asObservable();
       },
       error: (error) => {
         console.error('Erro ao carregar profissionais:', error);
-        this.errorMessage = 'Erro ao carregar profissionais';
+        this.mensagemDeErro = 'Erro ao carregar profissionais';
       }
     });
   }
 
   abrirFormulario() {
-    this.showForm = true;
-    this.isEditing = false;
+    this.exibirFormulario = true;
+    this.estaEditando = false;
     this.profForm.reset({
       horaEntrada: '09:00:00',
       almoco: '12:00:00',
@@ -174,9 +181,9 @@ export class ProfissionaisComponent implements OnInit {
   }
 
   editarProfissional(prof: Profissional) {
-    this.showForm = true;
-    this.isEditing = true;
-    this.editingId = prof.idProf!;
+    this.exibirFormulario = true;
+    this.estaEditando = true;
+    this.editandoId = prof.idProf!;
     this.profForm.patchValue({
       nome: prof.nome,
       telefone: prof.telefone,
@@ -191,15 +198,15 @@ export class ProfissionaisComponent implements OnInit {
   }
 
   cancelarFormulario() {
-    this.showForm = false;
-    this.editingId = null;
-    this.errorMessage = '';
+    this.exibirFormulario = false;
+    this.editandoId = null;
+    this.mensagemDeErro = '';
   }
 
   salvarProfissional() {
     if (this.profForm.valid) {
-      this.saving = true;
-      this.errorMessage = '';
+      this.salvando = true;
+      this.mensagemDeErro = '';
       const formValue = this.profForm.value;
 
       const profissional: Profissional = {
@@ -208,19 +215,19 @@ export class ProfissionaisComponent implements OnInit {
         especialidades: formValue.especialidades || []
       };
 
-      const operation = this.isEditing && this.editingId
-        ? this.profissionalService.update(this.editingId, profissional)
-        : this.profissionalService.create(profissional);
+      const operation = this.estaEditando && this.editandoId
+        ? this.profissionalService.alterar(this.editandoId, profissional)
+        : this.profissionalService.criar(profissional);
 
       operation.subscribe({
         next: () => {
-          this.saving = false;
+          this.salvando = false;
           this.cancelarFormulario();
-          this.carregarProfissionais();
+          this.buscarTodos();
         },
         error: (error) => {
-          this.saving = false;
-          this.errorMessage = error.message || 'Erro ao salvar profissional';
+          this.salvando = false;
+          this.mensagemDeErro = error.message || 'Erro ao salvar profissional';
         }
       });
     }
@@ -228,12 +235,12 @@ export class ProfissionaisComponent implements OnInit {
 
   deletarProfissional(id: number) {
     if (confirm('Tem certeza que deseja desativar este profissional?')) {
-      this.profissionalService.delete(id).subscribe({
+      this.profissionalService.excluir(id).subscribe({
         next: () => {
-          this.carregarProfissionais();
+          this.buscarTodos();
         },
         error: (error) => {
-          this.errorMessage = error.message || 'Erro ao excluir profissional';
+          this.mensagemDeErro = error.message || 'Erro ao excluir profissional';
         }
       });
     }

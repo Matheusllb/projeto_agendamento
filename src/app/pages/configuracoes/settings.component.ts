@@ -26,19 +26,19 @@ import { LucideAngularModule, Settings as SettingsIcon, Save } from 'lucide-angu
           </p>
         </div>
 
-        <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()" class="space-y-6">
+        <form [formGroup]="configForm" (ngSubmit)="salvarConfiguracoes()" class="space-y-6">
           <!-- Informações Básicas -->
           <div>
             <h4 class="font-semibold text-gray-700 mb-4">Informações Básicas</h4>
             <div class="space-y-4">
               <div>
                 <label class="block mb-1 font-medium text-gray-600">Nome do Estabelecimento</label>
-                <input type="text" formControlName="name" class="form-control" placeholder="Ex: Barbearia Exemplo">
+                <input type="text" formControlName="nome" class="form-control" placeholder="Ex: Barbearia Exemplo">
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block mb-1 font-medium text-gray-600">Telefone</label>
-                  <input type="text" formControlName="phone" class="form-control" placeholder="(11) 99999-9999">
+                  <input type="text" formControlName="telefone" class="form-control" placeholder="(11) 99999-9999">
                 </div>
                 <div>
                   <label class="block mb-1 font-medium text-gray-600">Email</label>
@@ -47,7 +47,7 @@ import { LucideAngularModule, Settings as SettingsIcon, Save } from 'lucide-angu
               </div>
               <div>
                 <label class="block mb-1 font-medium text-gray-600">Endereço</label>
-                <input type="text" formControlName="address" class="form-control" placeholder="Rua, número, bairro">
+                <input type="text" formControlName="endereco" class="form-control" placeholder="Rua, número, bairro">
               </div>
             </div>
           </div>
@@ -66,21 +66,21 @@ import { LucideAngularModule, Settings as SettingsIcon, Save } from 'lucide-angu
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block mb-1 font-medium text-gray-600">Intervalo entre Atendimentos (min)</label>
-                <input type="number" formControlName="bufferMinutes" class="form-control" min="0" step="5">
+                <input type="number" formControlName="intervaloAtendimentos" class="form-control" min="0" step="5">
               </div>
               <div>
                 <label class="block mb-1 font-medium text-gray-600">Limite de Dias Futuros</label>
-                <input type="number" formControlName="futureSchedulingDays" class="form-control" min="1">
+                <input type="number" formControlName="limiteDiasFuturos" class="form-control" min="1">
               </div>
             </div>
           </div>
 
           <!-- Butões -->
           <div class="flex justify-end gap-3 pt-6 border-t border-gray-200">
-            <button type="button" class="btn btn-secondary" (click)="resetForm()">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="settingsForm.invalid || saving">
+            <button type="button" class="btn btn-secondary" (click)="resetarFormulario()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="configForm.invalid || salvando">
               <lucide-icon [img]="Save" size="18" class="mr-2"></lucide-icon>
-              {{ saving ? 'Salvando...' : 'Salvar Configurações' }}
+              {{ salvando ? 'Salvando...' : 'Salvar Configurações' }}
             </button>
           </div>
         </form>
@@ -88,23 +88,23 @@ import { LucideAngularModule, Settings as SettingsIcon, Save } from 'lucide-angu
     </div>
   `
 })
-export class SettingsComponent implements OnInit {
+export class ConfiguracoesComponet implements OnInit {
   private fb = inject(FormBuilder);
 
   readonly SettingsIcon = SettingsIcon;
   readonly Save = Save;
 
-  saving = false;
-  settingsForm: FormGroup;
+  salvando = false;
+  configForm: FormGroup;
 
   constructor() {
-    this.settingsForm = this.fb.group({
-      name: ['Barbearia Exemplo', Validators.required],
-      address: ['Rua das Flores, 123'],
-      phone: ['(11) 99999-9999', Validators.required],
+    this.configForm = this.fb.group({
+      nome: ['Barbearia Exemplo', Validators.required],
+      endereco: ['Rua das Flores, 123'],
+      telefone: ['(11) 99999-9999', Validators.required],
       email: ['contato@exemplo.com', [Validators.email]],
-      bufferMinutes: [15, [Validators.required, Validators.min(0)]],
-      futureSchedulingDays: [30, [Validators.required, Validators.min(1)]]
+      intervaloAtendimentos: [15, [Validators.required, Validators.min(0)]],
+      limiteDiasFuturos: [30, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -112,25 +112,25 @@ export class SettingsComponent implements OnInit {
     // As configurações serão carregadas da API ao iniciar a aplicação em implementação futura
   }
 
-  saveSettings() {
-    if (this.settingsForm.valid) {
-      this.saving = true;
+  salvarConfiguracoes() {
+    if (this.configForm.valid) {
+      this.salvando = true;
       // Simulação de salvamento
       setTimeout(() => {
-        this.saving = false;
+        this.salvando = false;
         alert('Configurações salvas com sucesso! (Funcionalidade em desenvolvimento)');
       }, 1000);
     }
   }
 
-  resetForm() {
-    this.settingsForm.reset({
-      name: 'Barbearia Exemplo',
-      address: 'Rua das Flores, 123',
-      phone: '(11) 99999-9999',
+  resetarFormulario() {
+    this.configForm.reset({
+      nome: 'Barbearia Exemplo',
+      endereco: 'Rua das Flores, 123',
+      telefone: '(11) 99999-9999',
       email: 'contato@exemplo.com',
-      bufferMinutes: 15,
-      futureSchedulingDays: 30
+      intervaloAtendimentos: 15,
+      limiteDiasFuturos: 30
     });
   }
 }

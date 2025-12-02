@@ -1,7 +1,7 @@
 /**
  * Este serviço gerencia as operações de dados relacionadas aos Profissionais.
  * Ele segue o padrão Repository, abstraindo a comunicação com a API
- * e fornecendo métodos claros para os componentes (getAll, getById, etc).
+ * e fornecendo métodos claros para os componentes (buscarTodos, buscarPorId, etc).
  */
 import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -16,8 +16,8 @@ export class ProfissionalService {
     private apiService = inject(ApiService);
     private readonly endpoint = 'profissionais';
 
-    getAll(): Observable<readonly Profissional[]> {
-        return this.apiService.getWithResponse<Profissional[]>(this.endpoint).pipe(
+    buscarTodos(): Observable<readonly Profissional[]> {
+        return this.apiService.buscaComResposta<Profissional[]>(this.endpoint).pipe(
             map(response => response.data || []),
             catchError(error => {
                 console.error('Erro ao carregar profissionais:', error);
@@ -26,19 +26,19 @@ export class ProfissionalService {
         );
     }
 
-    getById(id: number): Observable<Profissional> {
+    buscarPorId(id: number): Observable<Profissional> {
         return this.apiService.get<Profissional>(`${this.endpoint}/${id}`);
     }
 
-    create(profissional: Profissional): Observable<Profissional> {
+    criar(profissional: Profissional): Observable<Profissional> {
         return this.apiService.post<Profissional>(this.endpoint, profissional);
     }
 
-    update(id: number, profissional: Profissional): Observable<Profissional> {
+    alterar(id: number, profissional: Profissional): Observable<Profissional> {
         return this.apiService.put<Profissional>(`${this.endpoint}/${id}`, profissional);
     }
 
-    delete(id: number): Observable<any> {
-        return this.apiService.delete(`${this.endpoint}/${id}`);
+    excluir(id: number): Observable<any> {
+        return this.apiService.excluir(`${this.endpoint}/${id}`);
     }
 }

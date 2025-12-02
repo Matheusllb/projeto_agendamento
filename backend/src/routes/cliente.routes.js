@@ -24,7 +24,7 @@ router.get('/:id', ClienteController.buscarPorId);
 // A rota POST / (que combinada com /api/clientes vira /api/clientes/)
 router.post('/', clienteValidation, validate, ClienteController.criar);
 // A rota PUT /:id (que combinada com /api/clientes vira /api/clientes/:id)
-router.put('/:id', clienteValidation, validate, ClienteController.atualizar);
+router.put('/:id', clienteValidation, validate, ClienteController.alterar);
 // A rota DELETE /:id (que combinada com /api/clientes vira /api/clientes/:id)
 router.delete('/:id', ClienteController.deletar);
 

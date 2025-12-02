@@ -28,7 +28,7 @@ const profissionalValidation = [
 router.get('/', ProfissionalController.buscarTodos);
 router.get('/:id', ProfissionalController.buscarPorId);
 router.post('/', profissionalValidation, validate, ProfissionalController.criar);
-router.put('/:id', profissionalValidation, validate, ProfissionalController.atualizar);
+router.put('/:id', profissionalValidation, validate, ProfissionalController.alterar);
 router.delete('/:id', ProfissionalController.deletar);
 
 module.exports = router;
